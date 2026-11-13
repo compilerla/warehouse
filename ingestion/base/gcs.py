@@ -1,5 +1,7 @@
 import io
+import os
 from datetime import UTC, datetime
+from pathlib import Path
 
 import pandas as pd
 from google.cloud import storage
@@ -7,6 +9,8 @@ from google.cloud import storage
 # Environment variable names
 _ENV_START = "INGESTION_START_DATE"
 _ENV_END = "INGESTION_END_DATE"
+_ENV_BUCKET = "BUCKET_NAME"
+_ENV_OUTPUT_DIR = "OUTPUT_DIR"
 
 
 def _add_pull_date_csv(data: str, pull_date: str) -> str:
@@ -46,17 +50,116 @@ def _add_pull_date_jsonl(data: str, pull_date: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def upload_to_gcs(
+def _inject_pull_date(data: str, filename: str, pull_date: str) -> str:
+    """Inject pull_date into data based on file extension.
+
+    Args:
+        data: The data content to process.
+        filename: Base filename (used to determine format).
+        pull_date: ISO date string for the pull_date column/key.
+
+    Returns:
+        Data with pull_date injected.
+    """
+    _, ext = filename.rsplit(".", 1)
+    ext_lower = ext.lower()
+    if ext_lower == "csv":
+        return _add_pull_date_csv(data, pull_date)
+    if ext_lower == "jsonl":
+        return _add_pull_date_jsonl(data, pull_date)
+    # Unknown format — return data unchanged
+    return data
+
+
+def _generate_blob_name(source: str, filename: str, prefix: str = "compiler-data-lake") -> str:
+    """Generate the timestamped file path for a given filename.
+
+    Returns the same path format for both GCS blobs and local files:
+    <prefix>/<source>/<YYYY>/<MM>/<DD>/<filename>_<timestamp>.<ext>
+
+    Args:
+        source: Source name (e.g., "toggl").
+        filename: Base filename (e.g., "timesheets.csv").
+        prefix: GCS prefix / local directory prefix.
+
+    Returns:
+        Full path string (works for both GCS and local filesystem).
+    """
+    now = datetime.now(UTC)
+    date_path = now.strftime("%Y/%m/%d")
+    timestamp = now.strftime("%Y%m%dT%H%M%S")
+    name, ext = filename.rsplit(".", 1)
+    return f"{prefix}/{source}/{date_path}/{name}_{timestamp}.{ext}"
+
+
+def _write_to_local(output_dir: str, blob_name: str, data: str) -> str:
+    """Write data to local filesystem.
+
+    Args:
+        output_dir: Root output directory.
+        blob_name: The full path (same format as GCS blob name).
+        data: The data content to write.
+
+    Returns:
+        The local file path written to.
+    """
+    file_path = Path(output_dir) / blob_name
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(file_path, "w") as f:
+        f.write(data)
+    return str(file_path)
+
+
+def _upload_to_gcs(bucket_name: str, blob_name: str, data: str) -> str:
+    """Upload pre-processed data to GCS.
+
+    Args:
+        bucket_name: Name of the GCS bucket.
+        blob_name: The GCS blob path.
+        data: The data content to upload (already has pull_date injected).
+
+    Returns:
+        The full GCS path of the uploaded file.
+    """
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_string(data, content_type="text/plain")
+
+    return blob_name
+
+
+def _resolve_bucket(bucket_name: str | None) -> str | None:
+    """Resolve the effective bucket name.
+
+    Priority: explicit param > BUCKET_NAME env var > None (local mode).
+
+    Args:
+        bucket_name: Explicit bucket name (if provided).
+
+    Returns:
+        Bucket name string, or None for local mode.
+    """
+    if bucket_name:
+        return bucket_name
+    return os.environ.get(_ENV_BUCKET) or None
+
+
+def upload_to_storage(
     data: str,
-    bucket_name: str,
     source: str,
     filename: str,
     prefix: str = "compiler-data-lake",
     pull_date: str | None = None,
+    bucket_name: str | None = None,
 ) -> str:
-    """Upload data to GCS with timestamped file naming.
+    """Upload data to storage, falling back to local filesystem.
 
-    Files are written to the pattern:
+    Routing is determined by the effective bucket name:
+    - If BUCKET_NAME env var is set (or bucket_name param overrides it) → GCS
+    - If no bucket name is set → local filesystem (OUTPUT_DIR controls path)
+
+    File path pattern (same for both GCS and local):
     <prefix>/<source>/<YYYY>/<MM>/<DD>/<filename>_<timestamp>.<ext>
 
     For CSV files, a `pull_date` column is injected.
@@ -64,36 +167,30 @@ def upload_to_gcs(
 
     Args:
         data: The data content to upload (string).
-        bucket_name: Name of the GCS bucket.
         source: Source name (e.g., "toggl").
         filename: Base filename (e.g., "timesheets.csv").
-        prefix: GCS prefix (default: "compiler-data-lake").
+        prefix: GCS prefix / local directory prefix (default: "compiler-data-lake").
         pull_date: ISO date string for the pull_date column/key.
             Defaults to today's date.
+        bucket_name: Optional explicit bucket name (overrides BUCKET_NAME env var).
 
     Returns:
-        The full GCS path of the uploaded file.
+        The full path of the uploaded file (GCS path or local file path).
     """
-    now = datetime.now(UTC)
-    date_path = now.strftime("%Y/%m/%d")
-    timestamp = now.strftime("%Y%m%dT%H%M%S")
+    output_dir = os.environ.get(_ENV_OUTPUT_DIR)
+    bucket = _resolve_bucket(bucket_name)
 
+    now = datetime.now(UTC)
     if pull_date is None:
         pull_date = now.strftime("%Y-%m-%d")
 
-    name, ext = filename.rsplit(".", 1)
-    blob_name = f"{prefix}/{source}/{date_path}/{name}_{timestamp}.{ext}"
+    blob_name = _generate_blob_name(source, filename, prefix)
+    data = _inject_pull_date(data, filename, pull_date)
 
-    # Inject pull_date
-    ext_lower = ext.lower()
-    if ext_lower == "csv":
-        data = _add_pull_date_csv(data, pull_date)
-    elif ext_lower == "jsonl":
-        data = _add_pull_date_jsonl(data, pull_date)
+    if bucket is not None:
+        return _upload_to_gcs(bucket, blob_name, data)
 
-    client = storage.Client()
-    bucket = client.bucket(bucket_name)
-    blob = bucket.blob(blob_name)
-    blob.upload_from_string(data, content_type="text/plain")
+    if output_dir is None:
+        output_dir = "/tmp/warehouse-ingestion"
 
-    return blob_name
+    return _write_to_local(output_dir, blob_name, data)

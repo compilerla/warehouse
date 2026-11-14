@@ -7,7 +7,7 @@ import click
 from click.testing import CliRunner
 
 from ingestion.base import cli
-from ingestion.base.puller import Puller
+from ingestion.base.pull import Puller
 
 
 class MockPuller(Puller):

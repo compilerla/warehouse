@@ -1,7 +1,6 @@
-# Source registration will happen when sources are loaded
 import click
 
-from ingestion.base import cli
+from ingestion.base import cli, discover_pullers
 
 
 @click.group()
@@ -15,15 +14,15 @@ def register_source(group: click.Group, source_name: str, puller_class) -> None:
     """Register a source subcommand with the main CLI group.
 
     Each ingestion source (e.g., Toggl, Asana) provides a Puller subclass
-    and is registered here so it becomes available as `ingestion <source> pull`.
+    and is registered here so it becomes available as ``ingestion <source> pull``.
 
     Args:
         group: The Click group to register the subcommand on.
         source_name: The name of the source (e.g., "toggl").
-        puller_class: A class that inherits from `ingestion.base.base.Puller`.
+        puller_class: A class that inherits from ``ingestion.base.pull.Puller``.
     """
 
-    @group.command()
+    @click.command()
     @click.argument("action", type=click.Choice(["pull"]))
     @click.option("--start", "start_date", help="Start date (absolute or relative keyword)")
     @click.option("--end", "end_date", help="End date (absolute or relative keyword)")
@@ -34,3 +33,8 @@ def register_source(group: click.Group, source_name: str, puller_class) -> None:
         puller.pull(source=source_name, start_date=resolved_start, end_date=resolved_end)
 
     group.add_command(pull, source_name)
+
+
+# Auto-discover and register all Puller subclasses
+for _name, _cls in discover_pullers().items():
+    register_source(main, _name, _cls)

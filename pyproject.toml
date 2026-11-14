@@ -28,6 +28,9 @@ test = [
     "pytest-mock",
     "pytest-socket",
 ]
+toggl = [
+    "compiler-admin @ git+https://github.com/compilerla/compiler-admin.git@0ea52c9469546acf279719bb437e504833e367ca",
+]
 
 [project.scripts]
 ingestion = "ingestion.main:main"
@@ -37,7 +40,7 @@ requires = ["setuptools>=65", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["ingestion"]
+packages = ["ingestion", "ingestion.base", "ingestion.toggl"]
 
 [tool.setuptools_scm]
 

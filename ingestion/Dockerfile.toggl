@@ -1,0 +1,7 @@
+FROM ghcr.io/compilerla/warehouse/ingestion/base:latest AS base
+
+# Install Python package with Toggl extras
+RUN pip install --no-cache-dir ".[toggl]"
+
+# Set entrypoint for the Toggl pull command
+ENTRYPOINT ["ingestion", "toggl", "pull"]

@@ -1,4 +1,4 @@
-FROM metabase/metabase:v0.65.2
+FROM metabase/metabase:v0.65.4.3
 
 ARG IMAGE_VERSION
 ARG IMAGE_CREATED

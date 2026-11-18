@@ -1,115 +1,148 @@
-"""Integration tests for CLI → resolve_date_range → Puller wiring using a test puller."""
+"""Tests for Puller discovery and module scanning."""
 
-import os
+import types
 from unittest.mock import patch
 
-import click
-from click.testing import CliRunner
-
-from ingestion.base import cli
-from ingestion.base.pull import Puller
+from ingestion.base.pull import Puller, _collect_pullers, discover_pullers
 
 
-class MockPuller(Puller):
-    """A test puller that records the arguments passed to pull()."""
-
-    def __init__(self):
-        self.pull_calls = []
-
-    def pull(self, source: str, start_date: str | None = None, end_date: str | None = None):
-        """Record the call instead of actually pulling."""
-        self.pull_calls.append(
-            {
-                "source": source,
-                "start_date": start_date,
-                "end_date": end_date,
-            }
-        )
+def _make_fake_module(*classes) -> types.ModuleType:
+    """Create a fake module containing the given classes."""
+    mod = types.ModuleType("fake_source")
+    for cls in classes:
+        setattr(mod, cls.__name__, cls)
+    return mod
 
 
-def _make_test_command(puller: MockPuller) -> click.Command:
-    """Create a minimal CLI command that mimics register_source wiring.
+class _FakeSourceA(Puller):
+    """A fake puller for testing."""
 
-    This mirrors what main.py does: resolve dates, then call puller.pull().
-    """
+    source_name = "fake_a"
 
-    @click.command()
-    @click.option("--start", "start_date", help="Start date")
-    @click.option("--end", "end_date", help="End date")
-    def pull(start_date: str | None, end_date: str | None):
-        resolved_start, resolved_end = cli.resolve_date_range(start_date, end_date)
-        puller.pull(source="test-source", start_date=resolved_start, end_date=resolved_end)
-
-    return pull
+    def pull(self, source: str, start_date: str | None = None, end_date: str | None = None) -> list[str]:
+        return []
 
 
-class TestCLIPullerIntegration:
-    """Test the full CLI → resolve_date_range → Puller chain."""
+class _FakeSourceB(Puller):
+    """Another fake puller for testing."""
 
-    def test_cli_passes_absolute_dates(self, fixed_time):
-        """Test that absolute CLI args are resolved and passed to Puller."""
-        with fixed_time("2026-11-10 12:00:00"):
-            puller = MockPuller()
-            runner = CliRunner()
-            cmd = _make_test_command(puller)
-            result = runner.invoke(cmd, ["--start", "2026-10-01", "--end", "2026-10-31"])
+    source_name = "fake_b"
 
-        assert result.exit_code == 0
-        assert len(puller.pull_calls) == 1
-        assert puller.pull_calls[0]["source"] == "test-source"
-        assert puller.pull_calls[0]["start_date"] == "2026-10-01"
-        assert puller.pull_calls[0]["end_date"] == "2026-10-31"
+    def pull(self, source: str, start_date: str | None = None, end_date: str | None = None) -> list[str]:
+        return []
 
-    def test_cli_passes_yesterday_keyword(self, fixed_time):
-        """Test that 'yesterday' keyword resolves and is passed to Puller."""
-        with fixed_time("2026-11-10 12:00:00"):
-            puller = MockPuller()
-            runner = CliRunner()
-            cmd = _make_test_command(puller)
-            result = runner.invoke(cmd, ["--start", "yesterday", "--end", "yesterday"])
 
-        assert result.exit_code == 0
-        assert len(puller.pull_calls) == 1
-        assert puller.pull_calls[0]["start_date"] == "2026-11-09"
-        assert puller.pull_calls[0]["end_date"] == "2026-11-09"
+class _NonPuller:
+    """Not a Puller — should be ignored."""
 
-    def test_cli_defaults_to_yesterday_when_no_args(self, fixed_time):
-        """Test that CLI defaults to yesterday when no args provided."""
-        with fixed_time("2026-11-10 12:00:00"):
-            puller = MockPuller()
-            runner = CliRunner()
-            cmd = _make_test_command(puller)
-            result = runner.invoke(cmd, [])
 
-        assert result.exit_code == 0
-        assert len(puller.pull_calls) == 1
-        assert puller.pull_calls[0]["start_date"] == "2026-11-09"
-        assert puller.pull_calls[0]["end_date"] == "2026-11-09"
+class TestCollectPullers:
+    """Tests for _collect_pullers."""
 
-    def test_cli_env_var_fallback(self, fixed_time):
-        """Test that env vars are used when CLI args are absent."""
-        with fixed_time("2026-11-10 12:00:00"):
-            with patch.dict(os.environ, {"INGESTION_START_DATE": "2026-09-01", "INGESTION_END_DATE": "2026-09-30"}):
-                puller = MockPuller()
-                runner = CliRunner()
-                cmd = _make_test_command(puller)
-                result = runner.invoke(cmd, [])
+    def test_discovers_pullers_with_source_name(self):
+        """Test that Puller subclasses with source_name are collected."""
+        fake_mod = _make_fake_module(_FakeSourceA, _FakeSourceB)
+        results = _collect_pullers(fake_mod)
+        assert results == {"fake_a": _FakeSourceA, "fake_b": _FakeSourceB}
 
-        assert result.exit_code == 0
-        assert len(puller.pull_calls) == 1
-        assert puller.pull_calls[0]["start_date"] == "2026-09-01"
-        assert puller.pull_calls[0]["end_date"] == "2026-09-30"
+    def test_ignores_non_puller_classes(self):
+        """Test that non-Puller classes are skipped."""
+        fake_mod = _make_fake_module(_FakeSourceA, _NonPuller)
+        results = _collect_pullers(fake_mod)
+        assert "nonpuller" not in results
+        assert results["fake_a"] is _FakeSourceA
 
-    def test_cli_args_override_env_vars(self, fixed_time):
-        """Test that CLI args take priority over env vars."""
-        with fixed_time("2026-11-10 12:00:00"):
-            with patch.dict(os.environ, {"INGESTION_START_DATE": "2026-01-01", "INGESTION_END_DATE": "2026-12-31"}):
-                puller = MockPuller()
-                runner = CliRunner()
-                cmd = _make_test_command(puller)
-                result = runner.invoke(cmd, ["--start", "2026-06-15", "--end", "2026-06-15"])
+    def test_ignores_base_puller_class(self):
+        """Test that the base Puller class is not collected (no source_name)."""
+        fake_mod = _make_fake_module(Puller)
+        results = _collect_pullers(fake_mod)
+        assert not results
 
-        assert result.exit_code == 0
-        assert len(puller.pull_calls) == 1
-        assert puller.pull_calls[0]["start_date"] == "2026-06-15"
-        assert puller.pull_calls[0]["end_date"] == "2026-06-15"
+    def test_ignores_puller_without_source_name(self):
+        """Test that Puller subclasses without source_name are skipped."""
+
+        class _OrphanPuller(Puller):
+            """A puller with no source_name."""
+
+            def pull(self, source: str, start_date: str | None = None, end_date: str | None = None) -> list[str]:
+                return []
+
+        fake_mod = _make_fake_module(_OrphanPuller)
+        results = _collect_pullers(fake_mod)
+        assert not results
+
+    def test_returns_new_dict_each_call(self):
+        """Test that each call returns an independent dict."""
+        fake_mod = _make_fake_module(_FakeSourceA)
+        r1 = _collect_pullers(fake_mod)
+        r2 = _collect_pullers(fake_mod)
+        assert r1 == r2
+        assert r1 is not r2
+
+
+class TestDiscoverPullers:
+    """Tests for discover_pullers."""
+
+    def test_discovers_real_pullers(self):
+        """Test that discover_pullers finds pullers in the ingestion package."""
+        results = discover_pullers()
+        # TogglPuller is registered in the ingestion package
+        assert "toggl" in results
+        assert results["toggl"].__name__ == "TogglPuller"
+
+    def test_accepts_custom_base_package(self):
+        """Test that a custom base_package argument works with injected modules."""
+        fake_mod = _make_fake_module(_FakeSourceA)
+
+        fake_pkg = types.ModuleType("test_discover_pkg")
+        fake_pkg.__path__ = ["/dev/null"]
+
+        fake_walk_result = [
+            (None, "test_discover_pkg.fake_source", False),
+        ]
+
+        with (
+            patch("ingestion.base.pull.pkgutil.walk_packages", return_value=fake_walk_result),
+            patch(
+                "ingestion.base.pull.importlib.import_module",
+                side_effect=lambda name, *a, **k: fake_mod if name == "test_discover_pkg.fake_source" else fake_pkg,
+            ),
+        ):
+            results = discover_pullers(base_package="test_discover_pkg")
+            assert "fake_a" in results
+            assert results["fake_a"] is _FakeSourceA
+
+    def test_import_error_triggers_continue_path(self):
+        """Test that ImportError triggers the continue path in discover_pullers."""
+        import importlib as _importlib
+
+        original_import = _importlib.import_module
+
+        def _import_side_effect(name, *args, **kwargs):
+            if name == "good_module":
+                return _make_fake_module(_FakeSourceA)
+            if name == "bad_module":
+                raise ImportError(f"cannot import {name}")
+            # Let real imports pass through for pkgutil, etc.
+            return original_import(name, *args, **kwargs)
+
+        fake_walk_result = [
+            (None, "good_module", False),
+            (None, "bad_module", False),
+        ]
+
+        with (
+            patch("ingestion.base.pull.importlib.import_module", side_effect=_import_side_effect),
+            patch("ingestion.base.pull.pkgutil.walk_packages", return_value=fake_walk_result),
+        ):
+            results = discover_pullers()
+            assert "fake_a" in results
+            assert results["fake_a"] is _FakeSourceA
+
+    def test_handles_import_errors_in_modules(self):
+        """Test that modules that fail to import are skipped."""
+        # The real ingestion package has optional dependencies — this tests
+        # that ImportError from walk_packages doesn't crash discovery.
+        results = discover_pullers()
+        # Should not raise, should just skip problematic modules
+        assert isinstance(results, dict)

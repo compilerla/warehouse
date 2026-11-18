@@ -52,36 +52,59 @@ class Puller:
         raise NotImplementedError("Subclasses must implement pull()")
 
 
-def discover_pullers() -> dict[str, type[Puller]]:
-    """Discover all Puller subclasses across the ingestion package.
+def _collect_pullers(module: object) -> dict[str, type["Puller"]]:
+    """Collect Puller subclasses from a single module.
 
-    Walks all submodules of ``ingestion`` and collects classes that are
-    direct (or indirect) subclasses of ``Puller``.  Modules that cannot be
-    imported are silently skipped so that optional sources (e.g. ones that
-    depend on packages that may not be installed) don't break the CLI.
+    Args:
+        module: A Python module object (e.g. from ``importlib.import_module``).
+
+    Returns:
+        Dict mapping ``source_name`` to the Puller subclass found in the module.
+    """
+    results: dict[str, type["Puller"]] = {}
+    for attr_name in dir(module):
+        attr = getattr(module, attr_name)
+        if not (isinstance(attr, type) and issubclass(attr, Puller) and attr is not Puller):
+            continue
+
+        source = getattr(attr, "source_name", None)
+        if source:
+            results[source] = attr
+
+    return results
+
+
+def discover_pullers(
+    base_package: str = "ingestion",
+    on_error: callable | None = None,
+) -> dict[str, type[Puller]]:
+    """Discover all Puller subclasses across a package.
+
+    Walks all submodules of the given package and collects classes that are
+    subclasses of ``Puller``.  Modules that cannot be imported are silently
+    skipped so that optional sources (e.g. ones that depend on packages
+    that may not be installed) don't break the CLI.
+
+    Args:
+        base_package: The root package to scan (default: ``"ingestion"``).
+        on_error: Optional callback invoked when a module fails to import.
 
     Returns:
         Dict mapping ``source_name`` to the Puller subclass.
     """
     results: dict[str, type[Puller]] = {}
+    root = importlib.import_module(base_package)
 
     for importer, mod_name, is_pkg in pkgutil.walk_packages(
-        path=importlib.import_module("ingestion").__path__,
-        prefix="ingestion.",
-        onerror=lambda _: None,
+        path=root.__path__,
+        prefix=f"{base_package}.",
+        onerror=lambda err: on_error(err) if on_error else None,
     ):
         try:
             module = importlib.import_module(mod_name)
         except ImportError:
             continue
 
-        for attr_name in dir(module):
-            attr = getattr(module, attr_name)
-            if not (isinstance(attr, type) and issubclass(attr, Puller) and attr is not Puller):
-                continue
-
-            source = getattr(attr, "source_name", None)
-            if source:
-                results[source] = attr
+        results.update(_collect_pullers(module))
 
     return results

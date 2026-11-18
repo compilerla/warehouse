@@ -1,13 +1,20 @@
 """Tests for Toggl subprocess data fetching and puller integration."""
 
-from io import StringIO
 from subprocess import CompletedProcess
 from unittest.mock import patch
 
 import pandas as pd
 import pytest
 
-from ingestion.toggl.pull import _CLI, TogglPuller, _fetch_clients, _fetch_project_users, _fetch_projects, _fetch_timesheets, _fetch_users
+from ingestion.toggl.pull import (
+    _CLI,
+    TogglPuller,
+    _fetch_clients,
+    _fetch_project_users,
+    _fetch_projects,
+    _fetch_timesheets,
+    _fetch_users,
+)
 
 
 def _make_mock_result(stdout: str) -> CompletedProcess[str]:
@@ -36,25 +43,25 @@ def _make_users_csv() -> str:
 
 
 def _make_clients_csv() -> str:
-    return (
-        "id,name,created_at,updated_at,workspace_id\n"
-        "5,Acme Corp,2024-01-01 00:00:00,2024-06-01 00:00:00,123456\n"
-    )
+    return "id,name,created_at,updated_at,workspace_id\n" "5,Acme Corp,2024-01-01 00:00:00,2024-06-01 00:00:00,123456\n"
 
 
 def _make_projects_csv() -> str:
+    header = (
+        "id,name,description,client_id,active,billable,private,currency,"
+        "rate,estimated_seconds,actual_seconds,created_at,updated_at,"
+        "workspace_id\n"
+    )
     return (
-        "id,name,description,client_id,active,billable,private,currency,rate,estimated_seconds,actual_seconds,created_at,updated_at,workspace_id\n"
-        "100,Project Alpha,Alpha project,5,1,1,0,USD,150.0,360000,180000,2024-03-01 00:00:00,2024-08-01 00:00:00,123456\n"
+        header + "100,Project Alpha,Alpha project,5,1,1,0,USD,150.0,"
+        "360000,180000,2024-03-01 00:00:00,2024-08-01 00:00:00,123456\n"
     )
 
 
 def _make_project_users_csv() -> str:
-    return (
-        "id,user_id,project_id,workspace_id,rate,labor_cost\n"
-        "1,10,100,123456,150.0,100.0\n"
-        "2,20,100,123456,120.0,80.0\n"
-    )
+    header = "id,user_id,project_id,workspace_id,rate,labor_cost\n"
+    rows = "1,10,100,123456,150.0,100.0\n" "2,20,100,123456,120.0,80.0\n"
+    return header + rows
 
 
 class TestFetchTimesheets:
@@ -117,8 +124,7 @@ class TestFetchClients:
     def test_fetch_clients_csv(self):
         """Test that clients are fetched via compiler-admin ls clients --format csv."""
         csv_data = (
-            "id,name,created_at,updated_at,workspace_id\n"
-            "5,Acme Corp,2024-01-01 00:00:00,2024-06-01 00:00:00,123456\n"
+            "id,name,created_at,updated_at,workspace_id\n" "5,Acme Corp,2024-01-01 00:00:00,2024-06-01 00:00:00,123456\n"
         )
 
         with patch("ingestion.toggl.pull.subprocess.run") as mock_run:
@@ -141,10 +147,7 @@ class TestFetchProjects:
 
     def test_fetch_projects_csv(self):
         """Test that projects are fetched via compiler-admin ls projects --format csv."""
-        csv_data = (
-            "id,name,description,client_id,active,billable,private,currency,rate,estimated_seconds,actual_seconds,created_at,updated_at,workspace_id\n"
-            "100,Project Alpha,Alpha project,5,1,1,0,USD,150.0,360000,180000,2024-03-01 00:00:00,2024-08-01 00:00:00,123456\n"
-        )
+        csv_data = _make_projects_csv()
 
         with patch("ingestion.toggl.pull.subprocess.run") as mock_run:
             mock_run.return_value = _make_mock_result(csv_data)

@@ -7,6 +7,15 @@ ARG PYTHONDONTWRITEBYTECODE=1 \
 
 FROM python:3.14-trixie
 
+ARG IMAGE_VERSION
+ARG IMAGE_CREATED
+
+LABEL org.opencontainers.image.source="https://github.com/compilerla/warehouse"
+LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
+LABEL org.opencontainers.image.created="${IMAGE_CREATED}"
+LABEL org.opencontainers.image.url="ghcr.io/compilerla/warehouse/ingestion/base"
+LABEL org.opencontainers.image.documentation="https://docs.compiler.la/warehouse"
+
 # renew top-level args in this stage
 ARG PYTHONDONTWRITEBYTECODE \
     PYTHONUNBUFFERED \

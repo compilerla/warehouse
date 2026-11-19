@@ -66,6 +66,13 @@ ARG PYTHONDONTWRITEBYTECODE \
     USER_UID \
     USER_GID
 
+ARG IMAGE_VERSION
+ARG IMAGE_CREATED
+
+LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
+LABEL org.opencontainers.image.created="${IMAGE_CREATED}"
+LABEL org.opencontainers.image.url="ghcr.io/compilerla/warehouse/ingestion/toggl"
+
 # set env vars from args so they persist into running containers
 ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED} \
     PYTHONDONTWRITEBYTECODE=${PYTHONDONTWRITEBYTECODE} \

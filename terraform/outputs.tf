@@ -23,3 +23,8 @@ output "metabase_service_account_email" {
   value       = module.iam.metabase_service_account_email
 
 }
+
+output "ingestion_toggl_scheduler_name" {
+  description = "Name of the Cloud Scheduler job for Toggl data ingestion."
+  value       = module.ingestion-toggl.scheduler_name
+}

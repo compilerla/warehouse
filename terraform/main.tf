@@ -65,3 +65,15 @@ module "metabase" {
 
   depends_on = [module.apis, module.iam, module.database]
 }
+
+module "ingestion-toggl" {
+  source = "./modules/ingestion/toggl"
+
+  project_id                   = var.project_id
+  region                       = var.region
+  image_tag                    = var.ingestion_toggl_image_tag
+  output_bucket                = module.storage.bucket_name
+  ingestion_service_account_id = module.iam.ingestion_service_account_email
+
+  depends_on = [module.apis, module.iam, module.storage]
+}

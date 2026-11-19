@@ -72,5 +72,5 @@ COPY pyproject.toml pyproject.toml
 # Update pip and install Python tooling
 RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
     python -m pip install --user --upgrade pip && \
-    python -m pip install --user -e ".[dev,test]" && \
+    python -m pip install --user -e ".[dev,test,toggl]" && \
     python -m pip install --user -r docs/requirements.txt

@@ -32,3 +32,8 @@ variable "deletion_protection" {
   description = "Whether to enable deletion protection for GCP services."
   type        = bool
 }
+
+variable "ingestion_toggl_image_tag" {
+  description = "Docker image tag for the Toggl ingestion Cloud Run Job."
+  type        = string
+}

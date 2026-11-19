@@ -30,6 +30,13 @@ resource "google_service_account" "github_actions" {
   project      = var.project_id
 }
 
+resource "google_service_account" "ingestion" {
+  account_id   = "ingestion-runner"
+  description  = "Dedicated runtime service account for ingestion Cloud Run Jobs"
+  display_name = "Ingestion Cloud Run Service Account"
+  project      = var.project_id
+}
+
 resource "google_project_iam_member" "metabase_roles" {
   for_each = toset(local.metabase_roles)
 

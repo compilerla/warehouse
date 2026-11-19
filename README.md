@@ -2,16 +2,18 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/compilerla/warehouse/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                           |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| ingestion/\_\_init\_\_.py      |        2 |        0 |        0 |        0 |    100% |           |
-| ingestion/base/\_\_init\_\_.py |        5 |        0 |        0 |        0 |    100% |           |
-| ingestion/base/cli.py          |       61 |        4 |       20 |        1 |     94% |120, 137-140 |
-| ingestion/base/gcs.py          |       38 |       10 |       10 |        2 |     67% |37-46, 81-\>84, 92 |
-| ingestion/base/puller.py       |        7 |        1 |        0 |        0 |     86% |        45 |
-| ingestion/base/secrets.py      |        3 |        1 |        0 |        0 |     67% |        16 |
-| ingestion/main.py              |       16 |       16 |        0 |        0 |      0% |      2-36 |
-| **TOTAL**                      |  **132** |   **32** |   **30** |    **3** | **76%** |           |
+| Name                            |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|-------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
+| ingestion/\_\_init\_\_.py       |        2 |        0 |        0 |        0 |    100% |           |
+| ingestion/base/\_\_init\_\_.py  |        5 |        0 |        0 |        0 |    100% |           |
+| ingestion/base/cli.py           |       61 |        4 |       20 |        1 |     94% |120, 137-140 |
+| ingestion/base/gcs.py           |       67 |        1 |       16 |        1 |     98% |        46 |
+| ingestion/base/pull.py          |       29 |        1 |        8 |        0 |     97% |        52 |
+| ingestion/base/secrets.py       |        3 |        1 |        0 |        0 |     67% |        16 |
+| ingestion/main.py               |       18 |        1 |        2 |        0 |     95% |        10 |
+| ingestion/toggl/\_\_init\_\_.py |        2 |        0 |        0 |        0 |    100% |           |
+| ingestion/toggl/pull.py         |       59 |        0 |        4 |        0 |    100% |           |
+| **TOTAL**                       |  **246** |    **8** |   **50** |    **2** | **97%** |           |
 
 
 ## Setup coverage badge

@@ -18,7 +18,8 @@ flowchart TD
 
     subgraph GCP ["Google Cloud Platform (Project: data-warehouse-492522 | Region: us-west1)"]
         subgraph Orchestration ["Data Orchestration"]
-            Workflows["Cloud Workflows"]
+            SCHED["Cloud Scheduler<br/>(daily cron)"]
+            JOB["Cloud Run Job (Ingestion)<br/>ingestion-toggl"]
         end
 
         subgraph Storage ["Storage & Processing"]
@@ -36,7 +37,7 @@ flowchart TD
 
         subgraph Storage_State ["Application State & Secrets"]
             CSQL[("Cloud SQL PostgreSQL<br/>(Application Metadata & Dashboards)")]
-            SM["Secret Manager<br/>(DB Pass, Encryption Key, OAuth Secret)"]
+            SM["Secret Manager<br/>(DB Pass, Encryption Key, OAuth, API Tokens)"]
         end
 
         subgraph IAM_Service ["Security & Identity"]
@@ -53,15 +54,16 @@ flowchart TD
     U_Internal --> MB
     U_External --> MB
 
-    Sources --> Workflows
-    Workflows -->|Python Jobs| GCS
+    Sources -->|APIs / CSV| SCHED
+    SCHED -->|Triggers| JOB
+    JOB -->|Puller| GCS
     GCS --> dbtRun
     dbtRun -->|SQL Transformation| BQ
 
     MB -->|Socat bridge: Cloud SQL Unix socket → TCP 5432| CSQL
     MB -.->|Fetch Secrets on Boot| SM
     MB -->|Native IAM Auth / Zero Keys| BQ
-    SA -.->|Attached Identity| MB
+    MB_SA -.->|Attached Identity| MB
 
     MB -->|Port 587 TLS| GW_SMTP
 ```
@@ -72,7 +74,7 @@ flowchart TD
 | :----------------------- | :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
 | **GCP Project**          | `data-warehouse-492522`                | Host project containing BigQuery analytics warehouse and infrastructure.                                                                       |
 | **GCP Region**           | `us-west1` (Oregon)                    | Optimal low-latency to California; standard Tier 1 GCP pricing (matches `us-central1` costs).                                                  |
-| **Domain & Ingress**     | `*.run.app` (Cloud Run default)        | GCP-managed HTTPS via default Cloud Run domain; no custom domain or DNS configuration required.                                                  |
+| **Domain & Ingress**     | `*.run.app` (Cloud Run default)        | GCP-managed HTTPS via default Cloud Run domain; no custom domain or DNS configuration required.                                                |
 | **Container Runtime**    | **GCP Cloud Run**                      | Zero Kubernetes overhead; fully managed container lifecycle; integrated Cloud SQL proxy; native HTTPS.                                         |
 | **Instance Policy**      | **Min Instances: 1**                   | Prevents cold-start delays and ensures Metabase background syncs, alerts, and scheduled pulses run continuously.                               |
 | **Application Database** | **Cloud SQL PostgreSQL**               | Production-ready state store for Metabase (dashboards, queries, users, permissions). Never use the default embedded H2 database in production. |
@@ -80,6 +82,6 @@ flowchart TD
 | **Authentication**       | **Dual Auth: Google OAuth + Password** | Google Workspace OAuth restricted to `@compiler.la` for internal staff, plus password invites enabled for external stakeholders.               |
 | **Outbound Email**       | **Google Workspace SMTP Relay**        | Reliable delivery of user invitations, password resets, and automated dashboard subscriptions.                                                 |
 | **Secrets Management**   | **GCP Secret Manager**                 | Securely injects database passwords, encryption keys, and client secrets directly into container environment variables.                        |
-| **Data Orchestration**   | **Google Cloud Workflows**             | Serverless orchestration for API and file ingestion. Low-cost and scales to zero.                                                            |
+| **Data Orchestration**   | **Cloud Scheduler + Cloud Run Jobs**   | Serverless scheduling and per-source ingestion jobs. Low-cost and scales to zero.                                                              |
 | **Data Modeling**        | **dbt Core**                           | Open-source analytics modeling; run as containerized jobs on Cloud Run to avoid dedicated VMs.                                                 |
-| **Ingestion Method**     | **Python Scripts**                     | Leverage existing Python libraries (e.g., Toggl access) to land raw data into GCS.                                                             |
+| **Ingestion Method**     | **Puller Framework**                   | Python ingestion framework with auto-discovered `Puller` subclasses for each data source (e.g., Toggl).                                        |

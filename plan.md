@@ -90,10 +90,13 @@ Refer to [docs/reference/structure.md](docs/reference/structure.md) for the deta
    - Document automated backup verification: [Cloud SQL Backup Verification](docs/guides/cloud-sql-backup-verification.md)
    - Document container image upgrade procedure via GitHub Actions CI/CD: [Container Image Upgrade](docs/guides/container-image-upgrade.md)
    - Add Cloud Run health check job to GitHub Actions (periodic + post-deploy): [.github/workflows/health-check.yml](.github/workflows/health-check.yml)
-6. **Phase 6: Data Ingestion (Workflows & GCS)**:
-   - Set up Cloud Workflows and Cloud Run jobs.
-   - Implement Python-based logic for API and CSV ingestion.
-   - Verify raw data landing in `compiler-data-lake` GCS bucket.
+6. **Phase 6: Data Ingestion (Cloud Run Jobs & Puller Framework)**:
+   - Set up `ingestion/` Python package with Puller abstraction, CLI, and GCS upload.
+   - Implement per-source ingestion (e.g., Toggl) as `Puller` subclasses — auto-discovered by Click CLI.
+   - Deploy source-specific Cloud Run Jobs (e.g., `ingestion-toggl`) triggered by Cloud Scheduler (daily at 06:00 PST with relative date keywords like `--start last-month --end yesterday`).
+   - Land raw data in `compiler-data-lake` GCS bucket (`compiler-data-lake/<source>/<YYYY>/<MM>/<DD>/`).
+   - Container images: `ghcr.io/compilerla/warehouse/ingestion/base:<sha>`, `ghcr.io/compilerla/warehouse/ingestion/toggl:<sha>`.
+   - See [Ingestion Architecture](docs/explanation/ingestion-architecture.md) for full design details.
 7. **Phase 7: Analytics Warehouse (dbt & BigQuery)**:
    - Initialize dbt Core project in the repository.
    - Deploy dbt transformation jobs to Cloud Run.

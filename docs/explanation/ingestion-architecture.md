@@ -13,7 +13,7 @@ flowchart LR
     subgraph Ingestion ["Cloud Run Job: ingestion-toggl"]
         JOB["ingestion toggl pull"]
         PULLER["Puller subclasses<br/>TogglPuller, …"]
-        GCS["GCS upload<br/>compiler-data-lake/<source>/<YYYY>/<MM>/<DD>/"]
+        GCS["GCS upload<br/>compiler-data-lake/source/YYYY/MM/DD/"]
     end
 
     subgraph Storage ["GCS Bucket"]

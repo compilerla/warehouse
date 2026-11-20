@@ -27,23 +27,23 @@ If no Cloud SQL socket is present (e.g. local development via Docker Compose), t
 
 Terraform injects the following environment variables into the Cloud Run service:
 
-| Variable | Value | Purpose |
-|----------|-------|---------|
+| Variable                             | Value                                                      | Purpose                                       |
+| ------------------------------------ | ---------------------------------------------------------- | --------------------------------------------- |
 | `CLOUD_SQL_INSTANCE_CONNECTION_NAME` | e.g. `data-warehouse-492522:us-west1:metabase-db-40ee866c` | Tells the entrypoint which instance to bridge |
-| `MB_DB_TYPE` | `postgres` | Tells Metabase to use PostgreSQL |
-| `MB_DB_HOST` | `127.0.0.1` | Socat listens on localhost:5432 |
-| `MB_DB_DBNAME` | `metabase` | Database name |
-| `MB_DB_USER` | `metabase` | Database user |
-| `MB_DB_PASS` | Resolved from Secret Manager | Database password |
+| `MB_DB_TYPE`                         | `postgres`                                                 | Tells Metabase to use PostgreSQL              |
+| `MB_DB_HOST`                         | `127.0.0.1`                                                | Socat listens on localhost:5432               |
+| `MB_DB_DBNAME`                       | `metabase`                                                 | Database name                                 |
+| `MB_DB_USER`                         | `metabase`                                                 | Database user                                 |
+| `MB_DB_PASS`                         | Resolved from Secret Manager                               | Database password                             |
 
 Cloud Run also mounts the Cloud SQL volume at `/cloudsql` so the proxy socket is available at container startup. This is configured in the Terraform `volume_mounts` block.
 
 ### Local vs. production
 
-| Environment | Database config | Behavior |
-|-------------|----------------|----------|
-| **Cloud Run** | `MB_DB_HOST=127.0.0.1` + `CLOUD_SQL_INSTANCE_CONNECTION_NAME` | Socat bridges the Cloud SQL Unix socket to TCP 5432 |
-| **Local (compose)** | `MB_DB_HOST=postgres` | No Cloud SQL proxy — Metabase connects directly to the local PostgreSQL container. The entrypoint skips socat setup |
+| Environment         | Database config                                               | Behavior                                                                                                            |
+| ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Cloud Run**       | `MB_DB_HOST=127.0.0.1` + `CLOUD_SQL_INSTANCE_CONNECTION_NAME` | Socat bridges the Cloud SQL Unix socket to TCP 5432                                                                 |
+| **Local (compose)** | `MB_DB_HOST=postgres`                                         | No Cloud SQL proxy — Metabase connects directly to the local PostgreSQL container. The entrypoint skips socat setup |
 
 ## Upgrade path
 

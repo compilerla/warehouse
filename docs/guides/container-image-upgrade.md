@@ -1,8 +1,12 @@
 # Container Image Upgrade Procedure
 
-This runbook covers how to upgrade the Metabase container image on Cloud Run via GitHub Actions CI/CD.
+This runbook covers how to upgrade container images on Cloud Run and Cloud Run Jobs via GitHub Actions CI/CD.
+
+> **How the pipeline works**: See the [Deploying to Production](../explanation/deployment-production.md) guide for a detailed explanation of the workflow, build steps, and Terraform apply process.
 
 ## Current Configuration
+
+### Metabase Service
 
 | Setting        | Value                                         |
 | -------------- | --------------------------------------------- |
@@ -16,10 +20,23 @@ This runbook covers how to upgrade the Metabase container image on Cloud Run via
 | Container port | 3000                                          |
 | Cloud Run URL  | `https://metabase-2xhfhhdfxq-uw.a.run.app`    |
 
+### Ingestion Job
+
+| Setting          | Value                                                         |
+| ---------------- | ------------------------------------------------------------- |
+| Job name         | ingestion-toggl                                               |
+| Region           | us-west1                                                      |
+| Image            | `ghcr.io/compilerla/warehouse/ingestion/toggl:<sha>`          |
+| CPU limit        | 0.25 vCPU                                                     |
+| Memory limit     | 256 MiB                                                       |
+| Max retries      | 1                                                             |
+| Service Account  | `ingestion-runner@data-warehouse-492522.iam.gserviceaccount.com` |
+
 ## Prerequisites
 
 - Push access to the `compilerla/warehouse` repository
 - Write access to the `metabase/` directory (Dockerfile and entrypoint)
+- Write access to the `ingestion/` directory (Dockerfiles and source code)
 
 ## Upgrade Procedure
 
@@ -31,7 +48,34 @@ Edit `metabase/Dockerfile` to change the base image version:
 FROM metabase/metabase:vX.XX.X
 ```
 
-### 2. Push a Release Tag
+### 2. Update the Ingestion Image (If Applicable)
+
+Edit `ingestion/Dockerfile.base` or `ingestion/Dockerfile.toggl` to change base images, dependencies, or source code:
+
+```dockerfile
+# Base image
+FROM python:3.12-slim
+
+# Add any new dependencies
+RUN pip install ...
+```
+
+If adding a new optional source, update `pyproject.toml`:
+
+```toml
+[project.optional-dependencies]
+my_source = [
+    "my-source-sdk>=1.0",
+]
+```
+
+Update the Docker build to include the new dependency group:
+
+```dockerfile
+RUN pip install .[toggl,my_source]
+```
+
+### 3. Push a Release Tag
 
 Push a tag following the date format `YYYY.MM.N` to trigger the deployment:
 
@@ -40,13 +84,15 @@ git tag -a 2026.11.1
 git push origin 2026.11.1
 ```
 
-This triggers the `Deploy` GitHub Actions workflow:
+The `Deploy` workflow will then:
 
-1. **Build**: The Dockerfile is built and pushed to GHCR (`ghcr.io/compilerla/warehouse/metabase:<sha>`)
-2. **Terraform**: The new image tag is injected via `TF_VAR_metabase_image_tag` and applied
-3. **Cloud Run**: The new revision is rolled out automatically
+1. Build and push 3 Docker images to GHCR (see [how it works](../explanation/deployment-production.md#automated-deployment-tag-push))
+2. Apply Terraform with the new image tags
+3. Roll out the new Metabase revision on Cloud Run
+4. Update the ingestion-toggl Cloud Run Job
+5. Run a health check against the Metabase service
 
-### 3. Verify the Deployment
+### 4. Verify the Deployment
 
 After the workflow completes, verify the deployment:
 
@@ -75,6 +121,15 @@ If a new version has issues, revert the tag and push a new one pointing to the p
    git tag -a 2026.11.2
    git push origin 2026.11.2
    ```
+
+### Quick Rollback (Manual Dispatch)
+
+For a faster rollback without pushing a new tag, use `workflow_dispatch`:
+
+```bash
+# Trigger from GitHub Actions UI → Actions → Deploy → Run workflow
+# Set metabase_image_tag to the previous working SHA or tag
+```
 
 ### Revert to Previous Cloud Run Revision
 

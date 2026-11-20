@@ -156,14 +156,15 @@ def upload_to_storage(
     """Upload data to storage, falling back to local filesystem.
 
     Routing is determined by the effective bucket name:
-    - If BUCKET_NAME env var is set (or bucket_name param overrides it) → GCS
-    - If no bucket name is set → local filesystem (OUTPUT_DIR controls path)
+
+      - If BUCKET_NAME env var is set (or bucket_name param overrides it) → GCS
+      - If no bucket name is set → local filesystem (OUTPUT_DIR controls path)
 
     File path pattern (same for both GCS and local):
-    <prefix>/<source>/<YYYY>/<MM>/<DD>/<filename>_<timestamp>.<ext>
+    `<prefix>/<source>/<YYYY>/<MM>/<DD>/<filename>_<timestamp>.<ext>`
 
-    For CSV files, a `pull_date` column is injected.
-    For JSONL files, a `pull_date` key is added to each record.
+      - For CSV files, a `pull_date` column is injected.
+      - For JSONL files, a `pull_date` key is added to each record.
 
     Args:
         data: The data content to upload (string).

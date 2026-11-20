@@ -65,13 +65,14 @@ def resolve_date_range(start: str | None, end: str | None) -> tuple[str, str]:
     """Resolve start and end date strings to ISO format dates.
 
     Resolution priority:
-    1. CLI arguments (if provided)
-    2. Environment variables (INGESTION_START_DATE / INGESTION_END_DATE)
-    3. Default: "yesterday" for both
 
-    Handles both absolute dates (e.g., "2026-10-01") and relative keywords
-    (e.g., "yesterday", "last-week"). When a relative keyword is used for
-    a range (like last-week), both start and end are resolved together.
+      1. CLI arguments (if provided)
+      2. Environment variables (`INGESTION_START_DATE` / `INGESTION_END_DATE`)
+      3. Default: "yesterday" for both
+
+    Handles both absolute dates (e.g., `"2026-10-01"`) and relative keywords
+    (e.g., `"yesterday"`, `"last-week"`). When a relative keyword is used for
+    a range (like `"last-week"`), both start and end are resolved together.
 
     Args:
         start: Start date string, env var value, or None.

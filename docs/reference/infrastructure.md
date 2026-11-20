@@ -15,6 +15,26 @@ This section contains technical details about the infrastructure.
 - Service Account: `metabase-runner@data-warehouse-492522.iam.gserviceaccount.com`
 - Public Access: `allUsers` granted `roles/run.invoker`
 
+### Cloud Run Jobs (Ingestion)
+
+- Job: `ingestion-toggl`
+- Image: `ghcr.io/compilerla/warehouse/ingestion/toggl:<sha>` (tagged per-deploy SHA, set via `TF_VAR_ingestion_toggl_image_tag` in GitHub Actions)
+- Region: `us-west1`
+- Command: `ingestion toggl pull`
+- Args: `--start last-month --end yesterday` (resolved by CLI at runtime)
+- CPU/Memory: 0.25 vCPU / 256 MiB (limits)
+- Max retries: 1
+- Service Account: `ingestion-runner@data-warehouse-492522.iam.gserviceaccount.com`
+
+### Cloud Scheduler
+
+- Job: `ingestion-toggl-daily`
+- Schedule: `0 6 * * *` (daily at 06:00 PST)
+- Timezone: `America/Los_Angeles`
+- Attempt deadline: `300s`
+- Target: `ingestion-toggl` Cloud Run Job (via Cloud Run v2 API)
+- Auth: OIDC token for `ingestion-runner` service account
+
 ### Cloud SQL
 
 - Instance: `metabase-db-{suffix}` (random hex suffix, e.g. `metabase-db-cba276d9`)
@@ -29,7 +49,7 @@ This section contains technical details about the infrastructure.
 ### BigQuery
 
 - Datasets (all in `data-warehouse-492522`, location: `US`):
-  - `raw` — Data as-ingested from source systems by Airflow pipelines
+  - `raw` — Data as-ingested from source systems by the ingestion framework (Cloud Run Jobs)
   - `staging` — Intermediate transformation tables used between raw ingestion and analytics
   - `analytics` — Cleaned, transformed, and reporting-ready tables and views queried by Metabase
 
@@ -43,12 +63,19 @@ This section contains technical details about the infrastructure.
 
 - `metabase-db-password` — PostgreSQL password for the `metabase` user
 - `metabase-encryption-secret-key` — 32-character Metabase encryption key
+- `toggl-api-token` — Toggl API token (injected into `ingestion-toggl` job)
+- `toggl-workspace-id` — Toggl workspace ID (injected into `ingestion-toggl` job)
+- `toggl-organization-id` — Toggl organization ID (injected into `ingestion-toggl` job)
 
 ### IAM Service Accounts
 
 - **metabase-runner** (`metabase-runner@data-warehouse-492522.iam.gserviceaccount.com`)
   - `roles/bigquery.jobUser`
   - `roles/cloudsql.client`
+  - `roles/secretmanager.secretAccessor`
+
+- **ingestion-runner** (`ingestion-runner@data-warehouse-492522.iam.gserviceaccount.com`)
+  - `roles/storage.objectCreator` (on `compiler-data-lake` bucket)
   - `roles/secretmanager.secretAccessor`
 
 - **github-actions-runner** (`github-actions-runner@data-warehouse-492522.iam.gserviceaccount.com`)

@@ -5,21 +5,21 @@ on:
     inputs:
       metabase_image_tag:
         description: "Metabase Docker image tag (e.g. v0.65.2 or a Git SHA)"
-        required: true
+      ingestion_toggl_image_tag:
+        description: "Toggl ingestion Docker image tag (e.g., abc1234)"
   push:
     tags:
-      # pre-release tag
-      - "202[3-9].[0-9][0-9].[0-9]+-rc[0-9]+"
       # release tags
       - "202[3-9].[0-9][0-9].[0-9]+"
     paths:
       - "metabase/**"
+      - "ingestion/**"
       - "terraform/**"
-
-defaults:
-  run:
-    shell: bash
-    working-directory: terraform
+  pull_request:
+    paths:
+      - "terraform/**"
+      - "metabase/**"
+      - "ingestion/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,55 +28,174 @@ concurrency:
 permissions:
   contents: read
   id-token: write
+  packages: write
   pull-requests: write
+  actions: read
 
 jobs:
-  setup:
+  terraform-plan:
+    name: Terraform Plan
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    outputs:
-      env_name: ${{ steps.set-env.outputs.env_name }}
-      is_tag: ${{ steps.set-env.outputs.is_tag }}
-      is_release: ${{ steps.set-env.outputs.is_release }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - id: set-env
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+        with:
+          version: ">= 446.0.0"
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+        with:
+          terraform_version: 1.16.6 # should match TF_VERSION in .devcontainer/Dockerfile
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - name: Get latest tagged image SHA
+        id: images
         run: |
-          # 1. Determine if it's a tag
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            IS_TAG="true"
-          else
-            IS_TAG="false"
-          fi
-          echo "is_tag=$IS_TAG" >> $GITHUB_OUTPUT
+          # Fetch the latest release tag SHA from GitHub API (fallback to "latest")
+          IMAGE_SHA=$(curl -s "https://api.github.com/repos/compilerla/warehouse/tags?per_page=1" \
+            | jq -r '.[0].commit.sha' 2>/dev/null || true)
+          echo "image_tag=${IMAGE_SHA:-latest}" >> $GITHUB_OUTPUT
 
-          # 2. Determine environment name
-          if [[ $IS_TAG == "false" ]]; then
-            ENV="dev"
-          elif [[ "${{ github.ref }}" == *"-rc"* ]]; then
-            ENV="test"
-          else
-            ENV="prod"
-          fi
-          echo "env_name=$ENV" >> $GITHUB_OUTPUT
+      - name: Terraform Init
+        run: |
+          terraform init
+          terraform workspace select default
 
-          # 3. Determine if it's a final release tag
-          if [[ $ENV == "prod" ]]; then
-            echo "is_release=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_release=false" >> $GITHUB_OUTPUT
-          fi
+      - name: Terraform Plan
+        env:
+          TF_VAR_google_client_id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          TF_VAR_smtp_password: ${{ secrets.SMTP_PASSWORD }}
+          TF_VAR_metabase_image_tag: ${{ steps.images.outputs.image_tag }}
+          TF_VAR_ingestion_toggl_image_tag: ${{ steps.images.outputs.image_tag }}
+        run: |
+          terraform plan -out=tfplan -lock-timeout=5m
+
+      - name: Setup tf-summarize
+        uses: kishaningithub/setup-tf-summarize@1596bb06f9509eb36b71bc1b304407cc111059c0 # v3.0.0
+
+      - name: Create tf-summarize markdown file
+        run: tf-summarize -md tfplan >> tf-summary.md
+
+      - name: Check for existing comment
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: CHANGE
+          direction: last
+        id: fc
+
+      - name: Create or update PR comment with course-grained plan summary
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5.0.0
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: "./terraform/tf-summary.md"
+          edit-mode: replace
+
+  build-images:
+    name: Build & Push Images
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_VERSION: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.ref_name }}
+      METABASE_IMAGE_TAG: ${{ github.event.inputs.metabase_image_tag || github.sha }}
+      TOGGL_IMAGE_TAG: ${{ github.event.inputs.ingestion_toggl_image_tag || github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set image created timestamp
+        run: echo "IMAGE_CREATED=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+        with:
+          version: ">= 446.0.0"
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
+
+      - name: Login to GHCR
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push metabase image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: metabase/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/compilerla/warehouse/metabase:${{ env.METABASE_IMAGE_TAG }}
+            ghcr.io/compilerla/warehouse/metabase:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            IMAGE_CREATED=${{ env.IMAGE_CREATED }}
+            IMAGE_VERSION=${{ env.IMAGE_VERSION }}
+
+      - name: Build & push ingestion base image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: ingestion/Dockerfile.base
+          push: true
+          tags: |
+            ghcr.io/compilerla/warehouse/ingestion/base:${{ env.TOGGL_IMAGE_TAG }}
+            ghcr.io/compilerla/warehouse/ingestion/base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            IMAGE_CREATED=${{ env.IMAGE_CREATED }}
+            IMAGE_VERSION=${{ env.IMAGE_VERSION }}
+
+      - name: Build & push ingestion toggl image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: ingestion/Dockerfile.toggl
+          push: true
+          tags: |
+            ghcr.io/compilerla/warehouse/ingestion/toggl:${{ env.TOGGL_IMAGE_TAG }}
+            ghcr.io/compilerla/warehouse/ingestion/toggl:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            IMAGE_CREATED=${{ env.IMAGE_CREATED }}
+            IMAGE_VERSION=${{ env.IMAGE_VERSION }}
 
   terraform-apply:
+    name: Terraform Apply
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    needs: [build-images]
     runs-on: ubuntu-latest
-    needs: [setup]
-    # this convoluted syntax allows skipped and successful prerequisite runs and disallows failures
-    if: (always() && !cancelled() && !failure())
-    environment: ${{ needs.setup.outputs.env_name }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
     env:
-      TF_VAR_metabase_image_tag: >-
-        ${{ needs.setup.outputs.is_tag == 'true' && github.sha || github.event.inputs.metabase_image_tag }}
+      METABASE_IMAGE_TAG: ${{ github.event.inputs.metabase_image_tag || github.sha }}
+      TOGGL_IMAGE_TAG: ${{ github.event.inputs.ingestion_toggl_image_tag || github.sha }}
       TF_VAR_google_client_id: ${{ secrets.GOOGLE_CLIENT_ID }}
       TF_VAR_smtp_password: ${{ secrets.SMTP_PASSWORD }}
     steps:
@@ -99,32 +218,17 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
           service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT }}
 
-      - name: Login to GHCR
-        if: needs.setup.outputs.is_tag == 'true'
-        uses: docker/login-action@343f7c4344506bcbf9b4dd1c19a1e2f010a6063f # v3.3.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build Metabase image
-        if: needs.setup.outputs.is_tag == 'true'
-        uses: docker/build-push-action@1d164e8fe90b2f198f83e223bf0f28e185e8086c # v6.20.0
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/compilerla/warehouse/metabase:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            IMAGE_VERSION=${{ github.sha }}
-            IMAGE_CREATED=${{ github.event.head_commit.timestamp }}
-
       - name: Terraform Init
-        run: ./init.sh "${{ needs.setup.outputs.env_name }}"
+        run: |
+          terraform init
+          terraform workspace select default
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan -lock-timeout=5m
+        env:
+          TF_VAR_metabase_image_tag: ${{ env.METABASE_IMAGE_TAG }}
+          TF_VAR_ingestion_toggl_image_tag: ${{ env.TOGGL_IMAGE_TAG }}
+        run: |
+          terraform plan -out=tfplan -lock-timeout=5m
 
       - name: Terraform Apply
         run: terraform apply -lock-timeout=5m tfplan
@@ -138,18 +242,18 @@ jobs:
           working-directory: terraform
 
   health-check:
+    name: Health Check
     needs: [terraform-apply]
     uses: ./.github/workflows/health-check.yml
     secrets: inherit
 
   release:
+    name: Release
     needs: [health-check]
-    if: needs.setup.outputs.is_release == 'true' && needs.health-check.result == 'success'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && needs.terraform-apply.result == 'success'
     runs-on: ubuntu-latest
     permissions:
-      # https://github.com/softprops/action-gh-release#permissions
       contents: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -157,7 +261,7 @@ jobs:
           fetch-depth: 0
 
       - name: Release
-        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
+        uses: softprops/action-gh-release@28ab305d0ffa26d60ec4bd614126329e26c7a0ec # v3.0.4
         with:
           prerelease: false
           generate_release_notes: true

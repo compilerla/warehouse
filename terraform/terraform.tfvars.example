@@ -1,0 +1,6 @@
+# Terraform variable values for local/CI use.
+# Copy to terraform.tfvars (gitignored) and fill in real values.
+# Secrets are stored in GCP Secret Manager — do NOT put secret values here.
+
+metabase_image_tag       = "<latest-tagged-SHA-or-latest>"
+ingestion_toggl_image_tag = "<latest-tagged-SHA-or-latest>"

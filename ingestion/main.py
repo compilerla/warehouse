@@ -13,7 +13,7 @@ def main():
 def register_source(group: click.Group, source_name: str, puller_class) -> None:
     """Register a source subcommand with the main CLI group.
 
-    Each ingestion source (e.g., Toggl, Asana) provides a Puller subclass
+    Each ingestion source (e.g., Toggl) provides a Puller subclass
     and is registered here so it becomes available as ``ingestion <source> pull``.
 
     Args:

@@ -114,8 +114,8 @@ def _fetch_project_users() -> pd.DataFrame:
 class TogglPuller(Puller):
     """Puller for Toggl data (timesheets, users, clients, projects, project users).
 
-    Fetches data by invoking the ``compiler-admin`` CLI binary and uploads
-    CSV files to GCS (or local filesystem if OUTPUT_DIR is set).
+    Fetches data by invoking the `compiler-admin` CLI binary and uploads
+    CSV files to GCS (or local filesystem if `OUTPUT_DIR` is set).
     """
 
     source_name = "toggl"

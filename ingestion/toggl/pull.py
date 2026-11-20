@@ -120,13 +120,20 @@ class TogglPuller(Puller):
 
     source_name = "toggl"
 
-    def pull(self, source: str, start_date: str | None = None, end_date: str | None = None) -> list[str]:
+    def pull(
+        self,
+        source: str,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        bucket_name: str | None = None,
+    ) -> list[str]:
         """Pull all Toggl data for the given date range.
 
         Args:
             source: Source name (used for path prefix).
             start_date: Start date (YYYY-MM-DD).
             end_date: End date (YYYY-MM-DD).
+            bucket_name: GCS bucket name (overrides BUCKET_NAME env var).
 
         Returns:
             List of uploaded file paths.
@@ -136,31 +143,31 @@ class TogglPuller(Puller):
         # 1. Timesheets
         timesheet_df = _fetch_timesheets(start_date, end_date)
         csv_data = timesheet_df.to_csv(index=False)
-        path = upload_to_storage(csv_data, source, TIMESHEET_FILENAME, pull_date=start_date)
+        path = upload_to_storage(csv_data, source, TIMESHEET_FILENAME, pull_date=start_date, bucket_name=bucket_name)
         paths.append(path)
 
         # 2. Users
         users_df = _fetch_users()
         csv_data = users_df.to_csv(index=False)
-        path = upload_to_storage(csv_data, source, USERS_FILENAME, pull_date=start_date)
+        path = upload_to_storage(csv_data, source, USERS_FILENAME, pull_date=start_date, bucket_name=bucket_name)
         paths.append(path)
 
         # 3. Clients
         clients_df = _fetch_clients()
         csv_data = clients_df.to_csv(index=False)
-        path = upload_to_storage(csv_data, source, CLIENTS_FILENAME, pull_date=start_date)
+        path = upload_to_storage(csv_data, source, CLIENTS_FILENAME, pull_date=start_date, bucket_name=bucket_name)
         paths.append(path)
 
         # 4. Projects
         projects_df = _fetch_projects()
         csv_data = projects_df.to_csv(index=False)
-        path = upload_to_storage(csv_data, source, PROJECTS_FILENAME, pull_date=start_date)
+        path = upload_to_storage(csv_data, source, PROJECTS_FILENAME, pull_date=start_date, bucket_name=bucket_name)
         paths.append(path)
 
         # 5. Project users
         project_users_df = _fetch_project_users()
         csv_data = project_users_df.to_csv(index=False)
-        path = upload_to_storage(csv_data, source, PROJECT_USERS_FILENAME, pull_date=start_date)
+        path = upload_to_storage(csv_data, source, PROJECT_USERS_FILENAME, pull_date=start_date, bucket_name=bucket_name)
         paths.append(path)
 
         return paths

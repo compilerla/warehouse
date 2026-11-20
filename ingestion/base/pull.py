@@ -35,13 +35,20 @@ class Puller:
 
     source_name: str
 
-    def pull(self, source: str, start_date: str | None = None, end_date: str | None = None) -> list[str]:
+    def pull(
+        self,
+        source: str,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        bucket_name: str | None = None,
+    ) -> list[str]:
         """Pull data from the source and return list of uploaded GCS paths.
 
         Args:
             source: Name of the ingestion source.
             start_date: Start date (override CLI/env defaults).
             end_date: End date (override CLI/env defaults).
+            bucket_name: GCS bucket name (overrides BUCKET_NAME env var).
 
         Returns:
             List of GCS paths for uploaded files.

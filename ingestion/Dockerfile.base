@@ -5,7 +5,53 @@ ARG PYTHONDONTWRITEBYTECODE=1 \
     USER_UID=1000 \
     USER_GID=1000
 
+# multi-stage build
+#
+# stage 1: builds the ingestion package wheel from source
+#          using the git metadata for version info
+FROM python:3.14-trixie AS build_wheel
+
+# renew top-level args in this stage
+ARG PYTHONDONTWRITEBYTECODE \
+    PYTHONUNBUFFERED \
+    USER \
+    USER_UID \
+    USER_GID
+
+# set env vars from args so they persist into running containers
+# use /tmp as HOME since the build stage runs as root (no compiler user in python:3.14-trixie)
+ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED} \
+    PYTHONDONTWRITEBYTECODE=${PYTHONDONTWRITEBYTECODE} \
+    HOME=/tmp \
+    PIP_CACHE_DIR=/tmp/pip-cache
+
+WORKDIR /build
+
+# upgrade pip and install build package
+RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
+    python -m pip install --user --upgrade pip && \
+    pip install --user build
+
+# copy all source files; changes here will invalidate subsequent Docker layers
+COPY . .
+RUN git config --global --add safe.directory /build
+
+# build the wheel, using pipcache for any build-time dependencies
+RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
+    python -m build
+
+# multi-stage build
+#
+# stage 2: installs the ingestion package in a fresh Python container
+#          the wheel is saved to /opt/wheels for use by source images
 FROM python:3.14-trixie
+
+# renew top-level args in this stage
+ARG PYTHONDONTWRITEBYTECODE \
+    PYTHONUNBUFFERED \
+    USER \
+    USER_UID \
+    USER_GID
 
 ARG IMAGE_VERSION
 ARG IMAGE_CREATED
@@ -16,45 +62,32 @@ LABEL org.opencontainers.image.created="${IMAGE_CREATED}"
 LABEL org.opencontainers.image.url="ghcr.io/compilerla/warehouse/ingestion/base"
 LABEL org.opencontainers.image.documentation="https://docs.compiler.la/warehouse"
 
-# renew top-level args in this stage
-ARG PYTHONDONTWRITEBYTECODE \
-    PYTHONUNBUFFERED \
-    USER \
-    USER_UID \
-    USER_GID
-
-# set env vars for the user, including HOME
+# set env vars for the user
 ENV PYTHONUNBUFFERED=${PYTHONUNBUFFERED} \
     PYTHONDONTWRITEBYTECODE=${PYTHONDONTWRITEBYTECODE} \
     HOME=/home/${USER} \
     USER=${USER} \
-    PATH="/${USER}/.local/bin:$PATH" \
-    # update env for local pip installs
-    # see https://docs.python.org/3/using/cmdline.html#envvar-PYTHONUSERBASE
-    # since all `pip install` commands are in the context of $USER
-    # $PYTHONUSERBASE is the location used by default
-    PYTHONUSERBASE="/${USER}/.local" \
-    # where to store the pip cache (use the default)
-    # https://pip.pypa.io/en/stable/cli/pip/#cmdoption-cache-dir
-    PIP_CACHE_DIR="/${USER}/.cache/pip"
+    PATH="/home/${USER}/.local/bin:$PATH" \
+    PYTHONUSERBASE="/home/${USER}/.local" \
+    PIP_CACHE_DIR="/home/${USER}/.cache/pip"
 
 USER root
 # install apt packages using the archives and lists cache
 RUN --mount=type=cache,id=apt-archives,sharing=locked,target=/var/cache/apt/archives \
     --mount=type=cache,id=apt-lists,sharing=locked,target=/var/lib/apt/lists \
     apt-get update && \
-    # upgrade ca-certificates (since it is already installed) to have the latest certs
     apt-get install --only-upgrade -y ca-certificates && \
-    # create non-root user
     groupadd --gid ${USER_GID} ${USER} 2>/dev/null || true && \
     useradd --uid ${USER_UID} --gid ${USER_GID} --create-home --shell /bin/bash ${USER} && \
-    # create user directories and set ownership for pip --user installs
-    mkdir -p ${PIP_CACHE_DIR} /${USER}/.local && \
-    chown -R ${USER}:${USER} /${USER} && \
-    # install system dependencies
     apt-get install -y --no-install-recommends curl git tzdata && \
-    # this cleanup is still important for the final image layer size
     rm -rf /var/lib/apt/lists/*
 
-# switch to non-root $USER
 USER ${USER}
+
+# copy the wheel built in the previous stage and save for source images
+COPY --from=build_wheel /build/dist /opt/wheels
+
+# install the locally built wheel and its base dependencies
+RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
+    python -m pip install --user --upgrade pip && \
+    pip install --user $(find /opt/wheels -name '*.whl')

@@ -6,14 +6,14 @@
 |-------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
 | ingestion/\_\_init\_\_.py       |        2 |        0 |        0 |        0 |    100% |           |
 | ingestion/base/\_\_init\_\_.py  |        5 |        0 |        0 |        0 |    100% |           |
-| ingestion/base/cli.py           |       61 |        4 |       20 |        1 |     94% |120, 137-140 |
+| ingestion/base/cli.py           |       61 |        4 |       20 |        1 |     94% |121, 138-141 |
 | ingestion/base/gcs.py           |       67 |        1 |       16 |        1 |     98% |        46 |
-| ingestion/base/pull.py          |       29 |        1 |        8 |        0 |     97% |        52 |
+| ingestion/base/pull.py          |       29 |        1 |        8 |        0 |     97% |        59 |
 | ingestion/base/secrets.py       |        3 |        1 |        0 |        0 |     67% |        16 |
-| ingestion/main.py               |       18 |        1 |        2 |        0 |     95% |        10 |
+| ingestion/main.py               |       19 |        1 |        2 |        0 |     95% |        10 |
 | ingestion/toggl/\_\_init\_\_.py |        2 |        0 |        0 |        0 |    100% |           |
 | ingestion/toggl/pull.py         |       59 |        0 |        4 |        0 |    100% |           |
-| **TOTAL**                       |  **246** |    **8** |   **50** |    **2** | **97%** |           |
+| **TOTAL**                       |  **247** |    **8** |   **50** |    **2** | **97%** |           |
 
 
 ## Setup coverage badge

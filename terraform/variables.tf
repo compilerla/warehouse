@@ -37,3 +37,8 @@ variable "ingestion_toggl_image_tag" {
   description = "Docker image tag for the Toggl ingestion Cloud Run Job."
   type        = string
 }
+
+variable "dbt_image_tag" {
+  description = "Docker image tag for the dbt Cloud Run Jobs."
+  type        = string
+}

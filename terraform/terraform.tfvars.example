@@ -4,3 +4,4 @@
 
 metabase_image_tag       = "<latest-tagged-SHA-or-latest>"
 ingestion_toggl_image_tag = "<latest-tagged-SHA-or-latest>"
+dbt_image_tag             = "<latest-tagged-SHA-or-latest>"

@@ -65,12 +65,14 @@ ENV PATH="$PATH:/home/$USER/.local/bin" \
     PIP_CACHE_DIR="/home/${USER}/.cache/pip"
 
 COPY .git .git
-COPY ingestion/ ingestion/
+COPY dbt/requirements.txt dbt/requirements.txt
 COPY docs/requirements.txt docs/requirements.txt
+COPY ingestion/ ingestion/
 COPY pyproject.toml pyproject.toml
 
 # Update pip and install Python tooling
 RUN --mount=type=cache,id=pipcache,target=${PIP_CACHE_DIR},uid=${USER_UID},gid=${USER_GID} \
     python -m pip install --user --upgrade pip && \
     python -m pip install --user -e ".[dev,test,toggl]" && \
+    python -m pip install --user -r dbt/requirements.txt && \
     python -m pip install --user -r docs/requirements.txt

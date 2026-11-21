@@ -1,0 +1,27 @@
+name: compiler_warehouse_dbt
+version: "1.0.0"
+config-version: 2
+
+profile: prod
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  compiler_warehouse_dbt:
+    base:
+      +materialized: view
+      +schema: base
+      +database: "{{ env_var('GOOGLE_CLOUD_PROJECT', 'data-warehouse-492522') }}"
+    mart:
+      +materialized: table
+      +schema: mart
+      +database: "{{ env_var('GOOGLE_CLOUD_PROJECT', 'data-warehouse-492522') }}"

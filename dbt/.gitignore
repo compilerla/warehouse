@@ -1,0 +1,6 @@
+# dbt generated files
+target/
+dbt_packages/
+package-lock.yml
+.user.yml
+logs/

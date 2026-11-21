@@ -1,0 +1,22 @@
+# dbt profiles configuration.
+#
+# For local development, copy this file to ~/.dbt/profiles.yml and
+# set the GOOGLE_CLOUD_PROJECT env var. dbt uses the bigquery adapter
+# with WIF authentication — no service account keys required.
+#
+# Cloud Run Jobs use this file baked into the Docker image at
+# /root/.dbt/profiles.yml.
+#
+# To verify local setup: dbt debug --target prod
+
+prod:
+  outputs:
+    prod:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GOOGLE_CLOUD_PROJECT', 'data-warehouse-492522') }}"
+      dataset: base
+      target_dataset: mart
+      timeout_seconds: 300
+      max_retries: 1
+  target: prod

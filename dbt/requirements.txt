@@ -1,0 +1,4 @@
+# dbt packages — shared between devcontainer and production Dockerfile
+
+dbt-core==1.12.7
+dbt-bigquery==1.12.4

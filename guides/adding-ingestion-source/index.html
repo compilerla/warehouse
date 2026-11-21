@@ -1,0 +1,1782 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.compiler.la/warehouse/guides/adding-ingestion-source/">
+      
+      
+        <link rel="prev" href="../../explanation/ingestion-architecture/">
+      
+      
+        <link rel="next" href="../cloud-sql-backup-verification/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="https://compiler.la/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Adding a New Ingestion Source - Compiler Warehouse: Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.2/css/all.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-VR1QBF67SK"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-VR1QBF67SK",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-VR1QBF67SK",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adding-a-new-ingestion-source" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Compiler Warehouse: Documentation" class="md-header__button md-logo" aria-label="Compiler Warehouse: Documentation" data-md-component="logo">
+      
+  <img src="https://avatars.githubusercontent.com/u/13874321?s=100&v=4" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Compiler Warehouse: Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Adding a New Ingestion Source
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/compilerla/warehouse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Compiler&rsquo;s Warehouse
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/architecture/" class="md-tabs__link">
+          
+  
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/structure/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting-started/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Compiler Warehouse: Documentation" class="md-nav__button md-logo" aria-label="Compiler Warehouse: Documentation" data-md-component="logo">
+      
+  <img src="https://avatars.githubusercontent.com/u/13874321?s=100&v=4" alt="logo">
+
+    </a>
+    Compiler Warehouse: Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/compilerla/warehouse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compiler&rsquo;s Warehouse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/cost-estimates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Cost Estimates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/custom-metabase-image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Metabase Docker Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/deployment-production/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploying to Production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ingestion-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-the-source-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Create the Source Package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-implement-the-puller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Implement the Puller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Implement the Puller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#real-world-example-toggl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Real-World Example: Toggl
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-handle-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Handle Secrets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Handle Secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registering Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-add-dependencies-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Add Dependencies (Optional)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-test-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Test Locally
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Test Locally">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testing-with-gcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing with GCS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-add-terraform-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Add Terraform Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Add Terraform Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cloud-run-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud Run Job
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud Scheduler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iam-bindings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IAM Bindings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secret Manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Deploy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What&rsquo;s Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-sql-backup-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud SQL Backup Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../container-image-upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Container Image Upgrade Procedure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ingestion-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/infrastructure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastructure Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helper Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ingestion
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/gcs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base gcs module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/pull/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base pull module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/secrets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base secrets module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/toggl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Toggl pull module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/coverage" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started with Compiler&rsquo;s Warehouse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ingestion-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adding-a-new-ingestion-source">Adding a New Ingestion Source<a class="headerlink" href="#adding-a-new-ingestion-source" title="Permanent link"> ¶</a></h1>
+<p>This guide walks through adding a new data source to the ingestion framework. The framework uses a plugin-style architecture: you create a source package, implement a <code>Puller</code> subclass, and the framework auto-discovers it at runtime.</p>
+<h2 id="architecture-overview">Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link"> ¶</a></h2>
+<p>The ingestion framework consists of three layers:</p>
+<ol>
+<li><strong>Base layer</strong> (<code>ingestion.base/</code>) — shared utilities: <code>Puller</code> base class, GCS/local upload, secret retrieval, CLI helpers.</li>
+<li><strong>Source packages</strong> (<code>ingestion/&lt;source&gt;/</code>) — each source is its own Python package with a <code>pull.py</code> containing a <code>Puller</code> subclass.</li>
+<li><strong>Entry point</strong> (<code>ingestion/main.py</code>) — discovers all <code>Puller</code> subclasses and dispatches CLI commands.</li>
+</ol>
+<p>Auto-discovery means <strong>no manual registration is needed</strong> — just add a new module with a <code>Puller</code> subclass and it will be picked up automatically.</p>
+<hr />
+<h2 id="1-create-the-source-package">1. Create the Source Package<a class="headerlink" href="#1-create-the-source-package" title="Permanent link"> ¶</a></h2>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>ingestion/my_source
+touch<span class="w"> </span>ingestion/my_source/__init__.py
+touch<span class="w"> </span>ingestion/my_source/pull.py
+</code></pre></div>
+<p>The package structure:</p>
+<div class="highlight"><pre><span></span><code>ingestion/my_source/
+├── __init__.py      # Empty or re-exports (optional)
+└── pull.py          # Contains the Puller subclass
+</code></pre></div>
+<hr />
+<h2 id="2-implement-the-puller">2. Implement the Puller<a class="headerlink" href="#2-implement-the-puller" title="Permanent link"> ¶</a></h2>
+<p>Create <code>ingestion/my_source/pull.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ingestion.base.pull</span><span class="w"> </span><span class="kn">import</span> <span class="n">Puller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ingestion.base.gcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">upload_to_storage</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySourcePuller</span><span class="p">(</span><span class="n">Puller</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Pull data from MySource."""</span>
+
+    <span class="n">source_name</span> <span class="o">=</span> <span class="s2">"my_source"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pull</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bucket_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pull MySource data for the given date range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: Source name (used for path prefix).</span>
+<span class="sd">            start_date: Start date (YYYY-MM-DD).</span>
+<span class="sd">            end_date: End date (YYYY-MM-DD).</span>
+<span class="sd">            bucket_name: GCS bucket name (overrides BUCKET_NAME env var).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of uploaded file paths (GCS or local).</span>
+<span class="sd">        """</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Fetch data from the source (return CSV or JSONL string)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fetch_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+
+        <span class="c1"># Upload to GCS (or local filesystem)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">upload_to_storage</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s2">"data.csv"</span><span class="p">,</span>
+            <span class="n">pull_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">paths</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_data</span><span class="p">(</span><span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Fetch raw data as a string (CSV or JSONL).</span>
+
+<span class="sd">    The framework injects a ``pull_date`` column/key into the output.</span>
+<span class="sd">    """</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">csv_data</span>
+</code></pre></div>
+<h3 id="key-requirements">Key Requirements<a class="headerlink" href="#key-requirements" title="Permanent link"> ¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>source_name</code></td>
+<td>Class attribute identifying the source (used for CLI dispatch and GCS path). Must match the package name.</td>
+</tr>
+<tr>
+<td><code>pull()</code></td>
+<td>Must return <code>list[str]</code> — one entry per uploaded file. The list is logged but not otherwise consumed.</td>
+</tr>
+<tr>
+<td><code>data</code> format</td>
+<td>String containing CSV or JSONL. Other formats are passed through unchanged (no <code>pull_date</code> injection).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="real-world-example-toggl">Real-World Example: Toggl<a class="headerlink" href="#real-world-example-toggl" title="Permanent link"> ¶</a></h3>
+<p>The Toggl source (<code>ingestion/toggl/pull.py</code>) is the reference implementation. It:</p>
+<ul>
+<li>Defines <code>source_name = "toggl"</code></li>
+<li>Fetches 5 data types (timesheets, users, clients, projects, project-users)</li>
+<li>Calls <code>upload_to_storage()</code> for each data type</li>
+<li>Returns a list of 5 GCS/local paths</li>
+</ul>
+<p>Each data type has its own filename constant (e.g., <code>TIMESHEET_FILENAME = "timesheets.csv"</code>).</p>
+<hr />
+<h2 id="3-handle-secrets">3. Handle Secrets<a class="headerlink" href="#3-handle-secrets" title="Permanent link"> ¶</a></h2>
+<p>If the source requires API tokens or credentials, use the <code>get_secret</code> helper from <code>ingestion.base.secrets</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ingestion.base.secrets</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_secret</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySourcePuller</span><span class="p">(</span><span class="n">Puller</span><span class="p">):</span>
+    <span class="n">source_name</span> <span class="o">=</span> <span class="s2">"my_source"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">get_secret</span><span class="p">(</span><span class="s2">"my-source-api-token"</span><span class="p">)</span>
+        <span class="o">...</span>
+</code></pre></div>
+<p>The helper currently reads secrets from environment variables. In production, secrets are injected into the Cloud Run Job&rsquo;s environment from Google Secret Manager via the Terraform configuration (see <a href="#3-create-secrets">Create Secrets</a> above).</p>
+<h3 id="registering-secrets">Registering Secrets<a class="headerlink" href="#registering-secrets" title="Permanent link"> ¶</a></h3>
+<p>Create the secret in Google Cloud:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>secrets<span class="w"> </span>create<span class="w"> </span>my-source-api-token<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--data-plaintext-file<span class="o">=</span>/path/to/token<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--replication-policy<span class="o">=</span>automatic<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--project<span class="o">=</span>data-warehouse-492522
+</code></pre></div>
+<hr />
+<h2 id="4-add-dependencies-optional">4. Add Dependencies (Optional)<a class="headerlink" href="#4-add-dependencies-optional" title="Permanent link"> ¶</a></h2>
+<p>If the source requires additional Python packages, add them as an optional dependency in <code>pyproject.toml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project.optional-dependencies]</span>
+<span class="n">my_source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"my-source-sdk&gt;=1.0"</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Add <code>my_source</code> to the setuptools packages list:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[tool.setuptools]</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"ingestion"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ingestion.base"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ingestion.toggl"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ingestion.my_source"</span><span class="p">]</span>
+</code></pre></div>
+<p>The optional dependency group (<code>my_source</code>) can be installed during the Docker build if needed:</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>my_source<span class="o">]</span>
+</code></pre></div>
+<p>Add <code>my_source</code> to the devcontainer&rsquo;s pip install so you can test locally:</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>toggl,my_source<span class="o">]</span>
+</code></pre></div>
+<p>Update <code>.devcontainer/Dockerfile</code> and any relevant <code>postCreate.sh</code> or <code>setup.sh</code> scripts accordingly.</p>
+<hr />
+<h2 id="5-test-locally">5. Test Locally<a class="headerlink" href="#5-test-locally" title="Permanent link"> ¶</a></h2>
+<p>Run a test pull without GCP credentials (uses local filesystem mode):</p>
+<div class="highlight"><pre><span></span><code>ingestion<span class="w"> </span>my_source<span class="w"> </span>pull<span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-10-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-10-31
+</code></pre></div>
+<p>Check the output:</p>
+<div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>/tmp/warehouse-ingestion/my_source/
+</code></pre></div>
+<p>The files will be written to <code>/tmp/warehouse-ingestion/</code> when no bucket is specified.</p>
+<h3 id="testing-with-gcs">Testing with GCS<a class="headerlink" href="#testing-with-gcs" title="Permanent link"> ¶</a></h3>
+<p>To test GCS uploads locally, use <code>--bucket</code>:</p>
+<div class="highlight"><pre><span></span><code>ingestion<span class="w"> </span>my_source<span class="w"> </span>pull<span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-10-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-10-31<span class="w"> </span>--bucket<span class="w"> </span>compiler-data-lake
+</code></pre></div>
+<hr />
+<h2 id="6-add-terraform-infrastructure">6. Add Terraform Infrastructure<a class="headerlink" href="#6-add-terraform-infrastructure" title="Permanent link"> ¶</a></h2>
+<p>Deploy the source to production by adding Terraform resources in <code>terraform/modules/ingestion/</code>:</p>
+<h3 id="cloud-run-job">Cloud Run Job<a class="headerlink" href="#cloud-run-job" title="Permanent link"> ¶</a></h3>
+<p>A Cloud Run Job runs <code>ingestion my_source pull</code> with the appropriate date range arguments.</p>
+<h3 id="cloud-scheduler">Cloud Scheduler<a class="headerlink" href="#cloud-scheduler" title="Permanent link"> ¶</a></h3>
+<p>A Cloud Scheduler job triggers the Cloud Run Job on a schedule (e.g., daily).</p>
+<h3 id="iam-bindings">IAM Bindings<a class="headerlink" href="#iam-bindings" title="Permanent link"> ¶</a></h3>
+<p>The service account needs:</p>
+<ul>
+<li><code>roles/storage.objectCreator</code> on the data lake bucket</li>
+<li><code>roles/secretmanager.secretAccessor</code> for any source-specific secrets</li>
+</ul>
+<h3 id="secret-manager">Secret Manager<a class="headerlink" href="#secret-manager" title="Permanent link"> ¶</a></h3>
+<p>Add source-specific secrets (API tokens, credentials) to Google Secret Manager.</p>
+<hr />
+<h2 id="7-deploy">7. Deploy<a class="headerlink" href="#7-deploy" title="Permanent link"> ¶</a></h2>
+<p>Push a release tag (e.g., <code>2026.11.20</code>) to trigger the CI/CD workflow. The new source is included in the base image (<code>ghcr.io/compilerla/warehouse/ingestion/base:&lt;sha&gt;</code>) since it lives in the <code>ingestion/</code> package.</p>
+<p>Deploy the Cloud Run Job and Cloud Scheduler separately via Terraform.</p>
+<hr />
+<h2 id="checklist">Checklist<a class="headerlink" href="#checklist" title="Permanent link"> ¶</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Created <code>ingestion/&lt;source&gt;/pull.py</code> with a <code>Puller</code> subclass</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Set <code>source_name</code> to match the package name</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>pull()</code> returns <code>list[str]</code> of uploaded file paths</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added dependencies to <code>pyproject.toml</code> (if needed)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added <code>my_source</code> to <code>[tool.setuptools].packages</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Created secrets in Google Secret Manager (if needed)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added <code>my_source</code> to devcontainer pip install</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tested locally (<code>ingestion my_source pull --start ... --end ...</code>)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added Cloud Run Job, Scheduler, and IAM in Terraform</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Pushed release tag and verified the deployment</li>
+</ul>
+<h2 id="whats-next">What&rsquo;s Next<a class="headerlink" href="#whats-next" title="Permanent link"> ¶</a></h2>
+<ul>
+<li>See the <a href="../../tutorials/ingestion-source/">Adding a New Ingestion Source</a> tutorial for a complete end-to-end walkthrough with code samples.</li>
+<li>See the <a href="../ingestion-operations/">Ingestion Operations Guide</a> for monitoring, troubleshooting, and ad-hoc pull procedures.</li>
+<li>See the <a href="../../explanation/deployment-production/">Deploying to Production</a> guide for a detailed explanation of the CI/CD pipeline.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.expand", "navigation.tabs", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

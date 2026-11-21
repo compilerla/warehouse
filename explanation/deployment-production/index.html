@@ -1,0 +1,1888 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.compiler.la/warehouse/explanation/deployment-production/">
+      
+      
+        <link rel="prev" href="../custom-metabase-image/">
+      
+      
+        <link rel="next" href="../ingestion-architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="https://compiler.la/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Deploying to Production - Compiler Warehouse: Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.2/css/all.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-VR1QBF67SK"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-VR1QBF67SK",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-VR1QBF67SK",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deploying-to-production" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Compiler Warehouse: Documentation" class="md-header__button md-logo" aria-label="Compiler Warehouse: Documentation" data-md-component="logo">
+      
+  <img src="https://avatars.githubusercontent.com/u/13874321?s=100&v=4" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Compiler Warehouse: Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deploying to Production
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/compilerla/warehouse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Compiler&rsquo;s Warehouse
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/adding-ingestion-source/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/structure/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/getting-started/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Compiler Warehouse: Documentation" class="md-nav__button md-logo" aria-label="Compiler Warehouse: Documentation" data-md-component="logo">
+      
+  <img src="https://avatars.githubusercontent.com/u/13874321?s=100&v=4" alt="logo">
+
+    </a>
+    Compiler Warehouse: Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/compilerla/warehouse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compiler&rsquo;s Warehouse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cost-estimates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Cost Estimates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-metabase-image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Metabase Docker Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploying to Production
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploying to Production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pr-plan-pull-request-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR Plan (Pull Request Triggers)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automated-deployment-tag-push" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Deployment (Tag Push)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automated Deployment (Tag Push)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#job-dependency-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Job Dependency Chain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-build-push-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Build &amp; Push Images
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-terraform-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Terraform Apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-health-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Health Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-github-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: GitHub Release
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manual-deployment-workflow_dispatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Deployment (workflow_dispatch)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Deployment (workflow_dispatch)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-manual-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use Manual Deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terraform-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terraform Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Terraform Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terraform-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terraform Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Rollback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-estimates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Estimates
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ingestion-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/adding-ingestion-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/cloud-sql-backup-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud SQL Backup Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/container-image-upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Container Image Upgrade Procedure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/ingestion-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/infrastructure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastructure Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helper Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ingestion
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/gcs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base gcs module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/pull/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base pull module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/secrets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base secrets module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/toggl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Toggl pull module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/coverage" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started with Compiler&rsquo;s Warehouse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/ingestion-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="deploying-to-production">Deploying to Production<a class="headerlink" href="#deploying-to-production" title="Permanent link"> ¶</a></h1>
+<p>This guide explains how the warehouse is deployed to production via GitHub Actions.</p>
+<h2 id="workflow-overview">Workflow Overview<a class="headerlink" href="#workflow-overview" title="Permanent link"> ¶</a></h2>
+<p>The <a href="https://github.com/compilerla/warehouse/blob/main/.github/workflows/deploy.yml">deploy.yml</a> workflow supports three trigger modes:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Description</th>
+<th>Jobs Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pull Request</strong></td>
+<td>Any PR touching <code>metabase/**</code>, <code>ingestion/**</code>, or <code>terraform/**</code></td>
+<td><code>terraform-plan</code> (plan + comment)</td>
+</tr>
+<tr>
+<td><strong>Tag Push</strong></td>
+<td>Tags matching <code>202[6-9].[0-9][0-9].[0-9]+</code> (e.g., <code>2026.11.8</code>)</td>
+<td>All jobs</td>
+</tr>
+<tr>
+<td><strong>Manual (workflow_dispatch)</strong></td>
+<td>Manual trigger from GitHub UI</td>
+<td><code>build-images</code>, <code>terraform-apply</code>, <code>health-check</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="concurrency">Concurrency<a class="headerlink" href="#concurrency" title="Permanent link"> ¶</a></h3>
+<p>The workflow uses a concurrency group (<code>${{ github.workflow }} - ${{ github.ref }}</code>) with <code>cancel-in-progress: true</code>. This ensures that only one run per branch/tag is active; newer runs cancel older ones.</p>
+<hr />
+<h2 id="pr-plan-pull-request-triggers">PR Plan (Pull Request Triggers)<a class="headerlink" href="#pr-plan-pull-request-triggers" title="Permanent link"> ¶</a></h2>
+<p>When a PR touches any of the tracked paths, the <code>terraform-plan</code> job runs automatically:</p>
+<ol>
+<li><strong>Authenticates</strong> to GCP via Workload Identity Federation (WIF).</li>
+<li><strong>Fetches</strong> the latest release tag SHA from the GitHub API (falls back to <code>"latest"</code>).</li>
+<li><strong>Runs</strong> <code>terraform plan</code> with the latest image tags.</li>
+<li><strong>Posts</strong> a summary comment on the PR using <a href="https://github.com/kishaningithub/tf-summarize">tf-summarize</a>, showing the infrastructure changes in markdown. If a comment already exists, it is updated in place.</li>
+</ol>
+<p>This gives reviewers a quick overview of infrastructure changes before merging.</p>
+<hr />
+<h2 id="automated-deployment-tag-push">Automated Deployment (Tag Push)<a class="headerlink" href="#automated-deployment-tag-push" title="Permanent link"> ¶</a></h2>
+<p>Production deployments are triggered automatically by pushing a release tag matching the pattern <code>202[6-9].[0-9][0-9].[0-9]+</code> (e.g., <code>2026.11.8</code>, <code>2027.01.15</code>). The tag must also be accompanied by changes in at least one of the tracked directories (<code>metabase/</code>, <code>ingestion/</code>, <code>terraform/</code>).</p>
+<h3 id="job-dependency-chain">Job Dependency Chain<a class="headerlink" href="#job-dependency-chain" title="Permanent link"> ¶</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Push as Tag Push
+    participant Build as Build &amp; Push Images
+    participant Apply as Terraform Apply
+    participant Health as Health Check
+    participant Release as Release
+
+    Push-&gt;&gt;Build: Trigger
+    Build-&gt;&gt;Build: Build 3 Docker images
+    Build-&gt;&gt;Build: Push to GHCR (+ latest tag)
+    Build-&gt;&gt;Apply: Success
+    Apply-&gt;&gt;Apply: Terraform plan
+    Apply-&gt;&gt;Apply: Terraform apply
+    Apply-&gt;&gt;Health: Success
+    Health-&gt;&gt;Health: Check /api/health
+    Health-&gt;&gt;Release: Success
+    Release-&gt;&gt;Release: Create GitHub release
+    Release-&gt;&gt;Release: Generate release notes</code></pre>
+<h3 id="step-1-build-push-images">Step 1: Build &amp; Push Images<a class="headerlink" href="#step-1-build-push-images" title="Permanent link"> ¶</a></h3>
+<p>The <code>build-images</code> job builds and pushes three Docker images to GitHub Container Registry (GHCR):</p>
+<table>
+<thead>
+<tr>
+<th>Image</th>
+<th>Dockerfile</th>
+<th>Tag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ghcr.io/compilerla/warehouse/metabase:&lt;sha&gt;</code></td>
+<td><code>metabase/Dockerfile</code></td>
+<td>Commit SHA + <code>latest</code></td>
+</tr>
+<tr>
+<td><code>ghcr.io/compilerla/warehouse/ingestion/base:&lt;sha&gt;</code></td>
+<td><code>ingestion/Dockerfile.base</code></td>
+<td>Commit SHA + <code>latest</code></td>
+</tr>
+<tr>
+<td><code>ghcr.io/compilerla/warehouse/ingestion/toggl:&lt;sha&gt;</code></td>
+<td><code>ingestion/Dockerfile.toggl</code></td>
+<td>Commit SHA + <code>latest</code></td>
+</tr>
+</tbody>
+</table>
+<p>Details:</p>
+<ul>
+<li><strong>Build arguments</strong>: Each image receives <code>IMAGE_CREATED</code> (ISO 8601 UTC timestamp) and <code>IMAGE_VERSION</code> (tag name for release tags, or <code>github.sha</code> for manual triggers).</li>
+<li><strong>Layer caching</strong>: GitHub Actions cache (<code>type=gha</code>) is used for both <code>cache-from</code> and <code>cache-to</code> (max mode) to speed up subsequent builds.</li>
+<li><strong><code>latest</code> tag</strong>: Every build also pushes a <code>latest</code> tag alongside the versioned tag, ensuring the most recent build is always easy to reference.</li>
+</ul>
+<h3 id="step-2-terraform-apply">Step 2: Terraform Apply<a class="headerlink" href="#step-2-terraform-apply" title="Permanent link"> ¶</a></h3>
+<p>The <code>terraform-apply</code> job runs after <code>build-images</code> succeeds:</p>
+<ol>
+<li><strong>Authenticates</strong> to GCP via Workload Identity Federation.</li>
+<li><strong>Initializes</strong> Terraform and selects the <code>default</code> workspace.</li>
+<li>
+<p><strong>Runs</strong> <code>terraform plan -out=tfplan -lock-timeout=5m</code> with image tags injected via:</p>
+<ul>
+<li><code>TF_VAR_metabase_image_tag</code> — the metabase image tag</li>
+<li><code>TF_VAR_ingestion_toggl_image_tag</code> — the ingestion toggl image tag</li>
+</ul>
+</li>
+<li>
+<p><strong>Applies</strong> the plan with <code>terraform apply tfplan -lock-timeout=5m</code>.</p>
+</li>
+<li><strong>Attaches</strong> a detailed plan summary to the job logs using <a href="https://github.com/borchero/terraform-plan-comment">terraform-plan-comment</a>.</li>
+</ol>
+<h3 id="step-3-health-check">Step 3: Health Check<a class="headerlink" href="#step-3-health-check" title="Permanent link"> ¶</a></h3>
+<p>The <code>health-check</code> job (a reusable workflow from <code>.github/workflows/health-check.yml</code>) runs after <code>terraform-apply</code> succeeds:</p>
+<ol>
+<li>Authenticates to GCP via Workload Identity Federation.</li>
+<li>Fetches the Cloud Run service URL for the Metabase service.</li>
+<li>Calls <code>/api/health</code> on the Metabase endpoint and expects HTTP 200.</li>
+<li>Fails the deployment if the health check returns a non-200 status.</li>
+</ol>
+<p>This provides a basic smoke test to verify the service is responding after the rollout.</p>
+<h3 id="step-4-github-release">Step 4: GitHub Release<a class="headerlink" href="#step-4-github-release" title="Permanent link"> ¶</a></h3>
+<p>If the trigger was a tag push (not a manual dispatch) and the health check passed, the <code>release</code> job creates a GitHub release:</p>
+<ul>
+<li><strong>Prerelease</strong>: <code>false</code> (final release)</li>
+<li><strong>Release notes</strong>: Auto-generated by GitHub (<code>generate_release_notes: true</code>)</li>
+<li>Requires <code>fetch-depth: 0</code> for full history to generate accurate notes</li>
+</ul>
+<hr />
+<h2 id="manual-deployment-workflow_dispatch">Manual Deployment (workflow_dispatch)<a class="headerlink" href="#manual-deployment-workflow_dispatch" title="Permanent link"> ¶</a></h2>
+<p>You can trigger a deployment manually from the GitHub Actions UI:</p>
+<ol>
+<li>Go to the <strong>Actions</strong> tab → <strong>Deploy</strong> workflow → <strong>Run workflow</strong>.</li>
+<li>Provide the following inputs:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>metabase_image_tag</code></td>
+<td>Docker image tag for Metabase</td>
+<td><code>v0.65.2</code> or a Git SHA</td>
+</tr>
+<tr>
+<td><code>ingestion_toggl_image_tag</code></td>
+<td>Docker image tag for Toggl ingestion</td>
+<td><code>abc1234</code> (Git SHA)</td>
+</tr>
+</tbody>
+</table>
+<p>When triggered manually:</p>
+<ul>
+<li>Image tags default to <code>github.sha</code> if not provided.</li>
+<li><code>IMAGE_VERSION</code> is set to <code>github.sha</code> (not a tag name).</li>
+<li>The <code>release</code> job is <strong>skipped</strong> (it only runs on tag push).</li>
+<li>The <code>health-check</code> runs after Terraform apply, just like automated deployments.</li>
+</ul>
+<h3 id="when-to-use-manual-deployment">When to Use Manual Deployment<a class="headerlink" href="#when-to-use-manual-deployment" title="Permanent link"> ¶</a></h3>
+<ul>
+<li>Rolling back to a known-good image tag.</li>
+<li>Deploying a specific commit without creating a tag.</li>
+<li>Updating only one image (e.g., Metabase) without changing the other.</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link"> ¶</a></h2>
+<h3 id="required-secrets">Required Secrets<a class="headerlink" href="#required-secrets" title="Permanent link"> ¶</a></h3>
+<p>The workflow requires these repository secrets:</p>
+<table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GCP_WIF_PROVIDER</code></td>
+<td>GCP Workload Identity Federation provider path</td>
+</tr>
+<tr>
+<td><code>GCP_WIF_SERVICE_ACCOUNT</code></td>
+<td>GCP service account for WIF authentication</td>
+</tr>
+<tr>
+<td><code>GOOGLE_CLIENT_ID</code></td>
+<td>Metabase OAuth Google client ID</td>
+</tr>
+<tr>
+<td><code>SMTP_PASSWORD</code></td>
+<td>SMTP password for email notifications</td>
+</tr>
+</tbody>
+</table>
+<h3 id="required-permissions">Required Permissions<a class="headerlink" href="#required-permissions" title="Permanent link"> ¶</a></h3>
+<p>The workflow requests these GitHub token permissions:</p>
+<table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>Used By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>contents: read</code></td>
+<td>Checkout code</td>
+</tr>
+<tr>
+<td><code>id-token: write</code></td>
+<td>GCP Workload Identity Federation authentication</td>
+</tr>
+<tr>
+<td><code>packages: write</code></td>
+<td>Push Docker images to GHCR</td>
+</tr>
+<tr>
+<td><code>pull-requests: write</code></td>
+<td>Post Terraform plan comments on PRs</td>
+</tr>
+<tr>
+<td><code>actions: read</code></td>
+<td>Read workflow run information</td>
+</tr>
+<tr>
+<td><code>contents: write</code></td>
+<td>Create GitHub releases (release job only)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="terraform-configuration">Terraform Configuration<a class="headerlink" href="#terraform-configuration" title="Permanent link"> ¶</a></h2>
+<h3 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link"> ¶</a></h3>
+<p>The workflow injects these Terraform variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Source</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TF_VAR_metabase_image_tag</code></td>
+<td>Image tag input / latest tag SHA</td>
+<td>Metabase Cloud Run image tag</td>
+</tr>
+<tr>
+<td><code>TF_VAR_ingestion_toggl_image_tag</code></td>
+<td>Image tag input / latest tag SHA</td>
+<td>Ingestion Cloud Run Job image tag</td>
+</tr>
+</tbody>
+</table>
+<h3 id="terraform-version">Terraform Version<a class="headerlink" href="#terraform-version" title="Permanent link"> ¶</a></h3>
+<p>Terraform is pinned to <strong>1.16.6</strong> across all jobs (matching <code>TF_VERSION</code> in <code>.devcontainer/Dockerfile</code>).</p>
+<h3 id="state-management">State Management<a class="headerlink" href="#state-management" title="Permanent link"> ¶</a></h3>
+<p>Terraform state is stored in GCP (managed via the existing Terraform configuration). Plan locks use a 5-minute timeout (<code>-lock-timeout=5m</code>).</p>
+<hr />
+<h2 id="deployment-rollback">Deployment Rollback<a class="headerlink" href="#deployment-rollback" title="Permanent link"> ¶</a></h2>
+<p>To roll back to a previous version:</p>
+<ol>
+<li><strong>Quick rollback</strong>: Trigger <code>workflow_dispatch</code> with the previous image tag for the service you want to roll back (Metabase or Toggl).</li>
+<li><strong>Tag-based rollback</strong>: Push a new tag pointing to the previous commit. The full pipeline (build → apply → health check → release) will run.</li>
+</ol>
+<hr />
+<h2 id="cost-estimates">Cost Estimates<a class="headerlink" href="#cost-estimates" title="Permanent link"> ¶</a></h2>
+<p>For a detailed breakdown of the initial monthly production costs, see the <a href="../cost-estimates/">Cost Estimates</a> page.</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.expand", "navigation.tabs", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

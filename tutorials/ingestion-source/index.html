@@ -1,0 +1,2138 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://docs.compiler.la/warehouse/tutorials/ingestion-source/">
+      
+      
+        <link rel="prev" href="../getting-started/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="https://compiler.la/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Adding a New Ingestion Source - Compiler Warehouse: Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.2/css/all.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-VR1QBF67SK"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-VR1QBF67SK",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-VR1QBF67SK",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adding-a-new-ingestion-source" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Compiler Warehouse: Documentation" class="md-header__button md-logo" aria-label="Compiler Warehouse: Documentation" data-md-component="logo">
+      
+  <img src="https://avatars.githubusercontent.com/u/13874321?s=100&v=4" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Compiler Warehouse: Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Adding a New Ingestion Source
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/compilerla/warehouse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Compiler&rsquo;s Warehouse
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/architecture/" class="md-tabs__link">
+          
+  
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/adding-ingestion-source/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/structure/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../getting-started/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Compiler Warehouse: Documentation" class="md-nav__button md-logo" aria-label="Compiler Warehouse: Documentation" data-md-component="logo">
+      
+  <img src="https://avatars.githubusercontent.com/u/13874321?s=100&v=4" alt="logo">
+
+    </a>
+    Compiler Warehouse: Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/compilerla/warehouse" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compiler&rsquo;s Warehouse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/cost-estimates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Cost Estimates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/custom-metabase-image/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Metabase Docker Image
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/deployment-production/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploying to Production
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ingestion-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/adding-ingestion-source/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/cloud-sql-backup-verification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud SQL Backup Verification
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/container-image-upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Container Image Upgrade Procedure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/ingestion-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/infrastructure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastructure Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Helper Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ingestion
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/gcs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base gcs module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/pull/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base pull module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/secrets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base secrets module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ingestion/toggl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Toggl pull module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/coverage" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started with Compiler&rsquo;s Warehouse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adding a New Ingestion Source
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-the-source-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Create the Source Package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-implement-the-puller" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Implement the Puller
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Implement the Puller">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-add-optional-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Add Optional Dependencies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-write-unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Write Unit Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Write Unit Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-verify-and-test-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Verify and Test Locally
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-prepare-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Prepare Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Prepare Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-create-the-terraform-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Create the Terraform Module
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-create-the-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Create the Dockerfile
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-create-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Create Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-add-the-cicd-build-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Add the CI/CD Build Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-wire-the-module-into-root-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Wire the Module into Root Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-apply-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Apply Infrastructure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-deploy-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Deploy to Production
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What&rsquo;s Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adding-a-new-ingestion-source">Adding a New Ingestion Source<a class="headerlink" href="#adding-a-new-ingestion-source" title="Permanent link"> ¶</a></h1>
+<p>This tutorial walks through the complete end-to-end process of adding a new ingestion source. We will build a contrived <code>acme_api</code> source that fetches CSV data from a mock API endpoint and uploads it to storage.</p>
+<blockquote>
+<p><strong>Prerequisites</strong>: Follow the <a href="../getting-started/">Getting Started</a> tutorial to set up your local development environment.</p>
+</blockquote>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link"> ¶</a></h2>
+<p>By the end of this tutorial, you will have:</p>
+<ol>
+<li>A new <code>ingestion/acme_api/</code> package with a <code>Puller</code> subclass</li>
+<li>A working CLI command: <code>ingestion acme_api pull --start ... --end ...</code></li>
+<li>Unit tests that mock the API client</li>
+<li>Optional dependencies in <code>pyproject.toml</code></li>
+<li>The source added to the devcontainer for local testing</li>
+</ol>
+<h2 id="1-create-the-source-package">1. Create the Source Package<a class="headerlink" href="#1-create-the-source-package" title="Permanent link"> ¶</a></h2>
+<p>Start by creating the package structure:</p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>ingestion/acme_api
+touch<span class="w"> </span>ingestion/acme_api/__init__.py
+touch<span class="w"> </span>ingestion/acme_api/pull.py
+</code></pre></div>
+<p>The package structure:</p>
+<div class="highlight"><pre><span></span><code>ingestion/acme_api/
+├── __init__.py      # Empty or re-exports (optional)
+└── pull.py          # Contains the Puller subclass
+</code></pre></div>
+<h2 id="2-implement-the-puller">2. Implement the Puller<a class="headerlink" href="#2-implement-the-puller" title="Permanent link"> ¶</a></h2>
+<p>Create <code>ingestion/acme_api/pull.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">"""Acme API puller — fetches widget data from the Acme API."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ingestion.base.pull</span><span class="w"> </span><span class="kn">import</span> <span class="n">Puller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ingestion.base.gcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">upload_to_storage</span>
+
+<span class="n">FILENAME</span> <span class="o">=</span> <span class="s2">"widgets.csv"</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_widgets</span><span class="p">(</span><span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Fetch widget data from the Acme API.</span>
+
+<span class="sd">    This is a contrived example. In a real implementation, you would</span>
+<span class="sd">    use an actual API client or make HTTP requests here.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        start_date: Start date (YYYY-MM-DD).</span>
+<span class="sd">        end_date: End date (YYYY-MM-DD).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame with raw widget data.</span>
+<span class="sd">    """</span>
+    <span class="c1"># Mock data for demonstration</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s2">"id"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Widget A"</span><span class="p">,</span> <span class="s2">"Widget B"</span><span class="p">,</span> <span class="s2">"Widget C"</span><span class="p">],</span>
+        <span class="s2">"created_at"</span><span class="p">:</span> <span class="p">[</span><span class="n">start_date</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">],</span>
+    <span class="p">})</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">AcmeApiPuller</span><span class="p">(</span><span class="n">Puller</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Pull data from the Acme API.</span>
+
+<span class="sd">    Fetches widget data and uploads it to GCS (or local filesystem).</span>
+<span class="sd">    """</span>
+
+    <span class="n">source_name</span> <span class="o">=</span> <span class="s2">"acme_api"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">pull</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bucket_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pull Acme API data for the given date range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source: Source name (used for path prefix).</span>
+<span class="sd">            start_date: Start date (YYYY-MM-DD).</span>
+<span class="sd">            end_date: End date (YYYY-MM-DD).</span>
+<span class="sd">            bucket_name: GCS bucket name (overrides BUCKET_NAME env var).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of uploaded file paths.</span>
+<span class="sd">        """</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Fetch data from the API</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">fetch_widgets</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+        <span class="n">csv_data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Upload to storage</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">upload_to_storage</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">csv_data</span><span class="p">,</span>
+            <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">FILENAME</span><span class="p">,</span>
+            <span class="n">pull_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+            <span class="n">bucket_name</span><span class="o">=</span><span class="n">bucket_name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">paths</span>
+</code></pre></div>
+<h3 id="key-points">Key Points<a class="headerlink" href="#key-points" title="Permanent link"> ¶</a></h3>
+<ul>
+<li><strong><code>source_name</code></strong>: This class attribute identifies the source. It determines the CLI subcommand (<code>ingestion acme_api pull</code>) and the GCS path prefix.</li>
+<li><strong>Auto-discovery</strong>: The framework discovers all <code>Puller</code> subclasses at import time — no manual registration needed.</li>
+<li><strong><code>bucket_name</code></strong>: The optional bucket parameter lets callers override the <code>BUCKET_NAME</code> environment variable directly from the CLI.</li>
+</ul>
+<h2 id="3-add-optional-dependencies">3. Add Optional Dependencies<a class="headerlink" href="#3-add-optional-dependencies" title="Permanent link"> ¶</a></h2>
+<p>If the source required additional packages (e.g., an Acme API SDK), add them to <code>pyproject.toml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[project.optional-dependencies]</span>
+<span class="n">acme_api</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"acme-sdk&gt;=1.0"</span><span class="p">,</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Add <code>acme_api</code> to the setuptools packages list:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[tool.setuptools]</span>
+<span class="n">packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"ingestion"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ingestion.base"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ingestion.toggl"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ingestion.acme_api"</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note</strong>: For this tutorial, we do not add external dependencies since we are using mock data. But in a real implementation, you would include the SDK here.</p>
+</blockquote>
+<p>Update the devcontainer to install the new source:</p>
+<div class="highlight"><pre><span></span><code><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.<span class="o">[</span>toggl,acme_api<span class="o">]</span>
+</code></pre></div>
+<h2 id="4-write-unit-tests">4. Write Unit Tests<a class="headerlink" href="#4-write-unit-tests" title="Permanent link"> ¶</a></h2>
+<p>Create <code>tests/ingestion/acme_api/test_pull.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="sd">"""Tests for Acme API puller."""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">patch</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ingestion.acme_api.pull</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcmeApiPuller</span><span class="p">,</span> <span class="n">fetch_widgets</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestFetchWidgets</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tests for the fetch_widgets function."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_fetch_widgets_returns_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that fetch_widgets returns a DataFrame."""</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">fetch_widgets</span><span class="p">(</span><span class="s2">"2026-10-01"</span><span class="p">,</span> <span class="s2">"2026-10-31"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="s2">"id"</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">columns</span>
+        <span class="k">assert</span> <span class="s2">"name"</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">columns</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_fetch_widgets_uses_date_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that the returned data reflects the date range."""</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">fetch_widgets</span><span class="p">(</span><span class="s2">"2026-10-01"</span><span class="p">,</span> <span class="s2">"2026-10-31"</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">"created_at"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"2026-10-01"</span>
+        <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">"created_at"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"2026-10-31"</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestAcmeApiPuller</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Tests for the AcmeApiPuller class."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_puller_has_source_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that the puller defines source_name."""</span>
+        <span class="k">assert</span> <span class="n">AcmeApiPuller</span><span class="o">.</span><span class="n">source_name</span> <span class="o">==</span> <span class="s2">"acme_api"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_pull_uses_correct_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that pull uploads with the expected filename."""</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">"ingestion.acme_api.pull.upload_to_storage"</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_upload</span><span class="p">:</span>
+            <span class="n">mock_upload</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">"compiler-data-lake/acme_api/2026/10/01/widgets_20261001T000000.csv"</span>
+
+            <span class="n">puller</span> <span class="o">=</span> <span class="n">AcmeApiPuller</span><span class="p">()</span>
+            <span class="n">puller</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s2">"acme_api"</span><span class="p">,</span> <span class="s2">"2026-10-01"</span><span class="p">,</span> <span class="s2">"2026-10-31"</span><span class="p">)</span>
+
+            <span class="n">mock_upload</span><span class="o">.</span><span class="n">assert_called_once</span><span class="p">()</span>
+            <span class="n">call_args</span> <span class="o">=</span> <span class="n">mock_upload</span><span class="o">.</span><span class="n">call_args</span>
+            <span class="k">assert</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">"filename"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"widgets.csv"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_pull_returns_single_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that pull returns one path for the single widget file."""</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">"ingestion.acme_api.pull.upload_to_storage"</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_upload</span><span class="p">:</span>
+            <span class="n">mock_upload</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">"compiler-data-lake/acme_api/2026/10/01/widgets_20261001T000000.csv"</span>
+
+            <span class="n">puller</span> <span class="o">=</span> <span class="n">AcmeApiPuller</span><span class="p">()</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">puller</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s2">"acme_api"</span><span class="p">,</span> <span class="s2">"2026-10-01"</span><span class="p">,</span> <span class="s2">"2026-10-31"</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_pull_passes_pull_date</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that pull_date is passed to upload_to_storage."""</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">"ingestion.acme_api.pull.upload_to_storage"</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_upload</span><span class="p">:</span>
+            <span class="n">mock_upload</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">"compiler-data-lake/acme_api/2026/10/01/widgets_20261001T000000.csv"</span>
+
+            <span class="n">puller</span> <span class="o">=</span> <span class="n">AcmeApiPuller</span><span class="p">()</span>
+            <span class="n">puller</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s2">"acme_api"</span><span class="p">,</span> <span class="s2">"2026-10-01"</span><span class="p">,</span> <span class="s2">"2026-10-31"</span><span class="p">)</span>
+
+            <span class="n">call_args</span> <span class="o">=</span> <span class="n">mock_upload</span><span class="o">.</span><span class="n">call_args</span>
+            <span class="k">assert</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">"pull_date"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"2026-10-01"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_pull_passes_bucket_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Test that bucket_name is forwarded to upload_to_storage."""</span>
+        <span class="k">with</span> <span class="n">patch</span><span class="p">(</span><span class="s2">"ingestion.acme_api.pull.upload_to_storage"</span><span class="p">)</span> <span class="k">as</span> <span class="n">mock_upload</span><span class="p">:</span>
+            <span class="n">mock_upload</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="s2">"compiler-data-lake/acme_api/2026/10/01/widgets_20261001T000000.csv"</span>
+
+            <span class="n">puller</span> <span class="o">=</span> <span class="n">AcmeApiPuller</span><span class="p">()</span>
+            <span class="n">puller</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s2">"acme_api"</span><span class="p">,</span> <span class="s2">"2026-10-01"</span><span class="p">,</span> <span class="s2">"2026-10-31"</span><span class="p">,</span> <span class="n">bucket_name</span><span class="o">=</span><span class="s2">"test-bucket"</span><span class="p">)</span>
+
+            <span class="n">call_args</span> <span class="o">=</span> <span class="n">mock_upload</span><span class="o">.</span><span class="n">call_args</span>
+            <span class="k">assert</span> <span class="n">call_args</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">"bucket_name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"test-bucket"</span>
+</code></pre></div>
+<p>Run the tests:</p>
+<div class="highlight"><pre><span></span><code>pytest<span class="w"> </span>tests/ingestion/acme_api/<span class="w"> </span>-v
+</code></pre></div>
+<h3 id="test-patterns">Test Patterns<a class="headerlink" href="#test-patterns" title="Permanent link"> ¶</a></h3>
+<p>The test patterns used here follow the same approach as the existing Toggl tests:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Technique</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Mock uploads</strong></td>
+<td><code>patch("ingestion.acme_api.pull.upload_to_storage")</code></td>
+<td>Verify <code>upload_to_storage()</code> is called with correct arguments without touching GCS</td>
+</tr>
+<tr>
+<td><strong>Mock API</strong></td>
+<td>Direct function calls (no mock needed for contrived example)</td>
+<td>In real code, mock HTTP clients or subprocess calls</td>
+</tr>
+<tr>
+<td><strong>Assertion on kwargs</strong></td>
+<td><code>call_args[1]["pull_date"]</code></td>
+<td>Verify keyword arguments are forwarded correctly</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-verify-and-test-locally">5. Verify and Test Locally<a class="headerlink" href="#5-verify-and-test-locally" title="Permanent link"> ¶</a></h2>
+<p>The new source should be discovered automatically by the CLI. Verify with:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check the source is registered</span>
+ingestion<span class="w"> </span>acme_api<span class="w"> </span>pull<span class="w"> </span>--help
+
+<span class="c1"># Expected output:</span>
+<span class="c1"># Usage: ingestion acme_api pull [OPTIONS] action</span>
+<span class="c1">#</span>
+<span class="c1">#   Pull data for the given date range.</span>
+<span class="c1">#</span>
+<span class="c1"># Options:</span>
+<span class="c1">#   --start TEXT    Start date (absolute or relative keyword)</span>
+<span class="c1">#   --end TEXT      End date (absolute or relative keyword)</span>
+<span class="c1">#   --bucket TEXT   GCS bucket name (overrides BUCKET_NAME env var)</span>
+<span class="c1">#   --help          Show this message and exit.</span>
+</code></pre></div>
+<p>Run a test pull without GCP credentials (uses local filesystem mode):</p>
+<div class="highlight"><pre><span></span><code>ingestion<span class="w"> </span>acme_api<span class="w"> </span>pull<span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-10-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-10-31
+</code></pre></div>
+<p>Check the output:</p>
+<div class="highlight"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>/tmp/warehouse-ingestion/acme_api/
+</code></pre></div>
+<p>The files will be written to <code>/tmp/warehouse-ingestion/</code> when no bucket is specified.</p>
+<p>To test with GCS, use the <code>--bucket</code> flag:</p>
+<div class="highlight"><pre><span></span><code>ingestion<span class="w"> </span>acme_api<span class="w"> </span>pull<span class="w"> </span>--start<span class="w"> </span><span class="m">2026</span>-10-01<span class="w"> </span>--end<span class="w"> </span><span class="m">2026</span>-10-31<span class="w"> </span>--bucket<span class="w"> </span>compiler-data-lake
+</code></pre></div>
+<h2 id="6-prepare-infrastructure">6. Prepare Infrastructure<a class="headerlink" href="#6-prepare-infrastructure" title="Permanent link"> ¶</a></h2>
+<p>Before you can deploy, you need to define the production resources: the Terraform module, the Docker image, the CI/CD build step, and the secrets.</p>
+<h3 id="1-create-the-terraform-module">1. Create the Terraform Module<a class="headerlink" href="#1-create-the-terraform-module" title="Permanent link"> ¶</a></h3>
+<p>Create <code>terraform/modules/ingestion/acme_api/</code> with these files:</p>
+<p><strong><code>variables.tf</code></strong> — inputs to the module:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">variable</span><span class="w"> </span><span class="nv">"project_id"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"The GCP project ID in which to create resources."</span>
+<span class="w">  </span><span class="na">type</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">"region"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"The GCP region for the Cloud Run job and Cloud Scheduler job."</span>
+<span class="w">  </span><span class="na">type</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span>
+<span class="w">  </span><span class="na">default</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s2">"us-west1"</span>
+<span class="p">}</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">"image_tag"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Docker image tag for the ingestion job (GHCR)."</span>
+<span class="w">  </span><span class="na">type</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">"output_bucket"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GCS bucket name for output files."</span>
+<span class="w">  </span><span class="na">type</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span>
+<span class="p">}</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">"ingestion_service_account_id"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Email of the Cloud Run job service account."</span>
+<span class="w">  </span><span class="na">type</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="kt">string</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>main.tf</code></strong> — Cloud Run Job and Cloud Scheduler:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">job_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ingestion-acme-api"</span>
+<span class="p">}</span>
+
+<span class="c1"># ─── Cloud Run Job ───────────────────────────────────────────────────────────</span>
+
+<span class="kr">resource</span><span class="w"> </span><span class="nc">"google_cloud_run_v2_job"</span><span class="w"> </span><span class="nv">"ingestion"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">name</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">local.job_name</span>
+<span class="w">  </span><span class="na">location</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span>
+<span class="w">  </span><span class="na">project</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="nv">var.project_id</span>
+<span class="w">  </span><span class="na">deletion_protection</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">false</span>
+
+<span class="w">  </span><span class="nb">template</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">parallelism</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="w">    </span><span class="na">task_count</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+
+<span class="w">    </span><span class="nb">template</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="na">service_account</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.ingestion_service_account_id</span>
+<span class="w">      </span><span class="na">max_retries</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+
+<span class="w">      </span><span class="nb">containers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="na">name</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"ingestion"</span>
+<span class="w">        </span><span class="na">image</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ghcr.io/compilerla/warehouse/ingestion/acme_api:${var.image_tag}"</span>
+
+<span class="w">        </span><span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"acme_api", "pull", "--start", "last-month", "--end", "yesterday"</span><span class="p">]</span>
+
+<span class="w">        </span><span class="nb">resources</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nb">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="na">cpu</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">"0.25"</span>
+<span class="w">            </span><span class="na">memory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"256Mi"</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># ─── Cloud Scheduler Job ─────────────────────────────────────────────────────</span>
+
+<span class="kr">resource</span><span class="w"> </span><span class="nc">"google_cloud_scheduler_job"</span><span class="w"> </span><span class="nv">"ingestion"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">name</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="s2">"${local.job_name}-daily"</span>
+<span class="w">  </span><span class="na">description</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="s2">"Daily pull of the previous calendar month from Acme API."</span>
+<span class="w">  </span><span class="na">schedule</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s2">"0 6 * * *"</span>
+<span class="w">  </span><span class="na">time_zone</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s2">"America/Los_Angeles"</span>
+<span class="w">  </span><span class="na">project</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="nv">var.project_id</span>
+<span class="w">  </span><span class="na">region</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span>
+<span class="w">  </span><span class="na">attempt_deadline</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"300s"</span>
+
+<span class="w">  </span><span class="nb">http_target</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">http_method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"POST"</span>
+<span class="w">    </span><span class="na">uri</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s2">"https://${var.region}-cloudrun.googleapis.com/v2/${google_cloud_run_v2_job.ingestion.name}:run"</span>
+
+<span class="w">    </span><span class="nb">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="na">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">base64encode</span><span class="p">(</span><span class="nf">jsonencode</span><span class="p">({</span>
+<span class="w">      </span><span class="s2">"template"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">"template"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="s2">"containers"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="s2">"args"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"acme_api"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"pull"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"--start", "last-month"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"--end", "yesterday"</span><span class="p">,</span>
+<span class="w">              </span><span class="p">]</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}))</span>
+
+<span class="w">    </span><span class="nb">oidc_token</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="na">service_account_email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.ingestion_service_account_id</span>
+<span class="w">      </span><span class="na">audience</span><span class="w">              </span><span class="o">=</span><span class="w"> </span><span class="s2">"https://${var.region}-cloudrun.googleapis.com/v2/${google_cloud_run_v2_job.ingestion.name}:run"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>iam.tf</code></strong> — IAM bindings for the service account:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Allow the Cloud Run job service account to write objects to the output bucket.</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">"google_storage_bucket_iam_member"</span><span class="w"> </span><span class="nv">"object_creator"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.output_bucket</span>
+<span class="w">  </span><span class="na">role</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">"roles/storage.objectCreator"</span>
+<span class="w">  </span><span class="na">member</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"serviceAccount:${var.ingestion_service_account_id}"</span>
+<span class="p">}</span>
+
+<span class="c1"># Allow the Cloud Run job service account to read secrets at runtime.</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">"google_project_iam_member"</span><span class="w"> </span><span class="nv">"secret_accessor"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">project</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.project_id</span>
+<span class="w">  </span><span class="na">role</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">"roles/secretmanager.secretAccessor"</span>
+<span class="w">  </span><span class="na">member</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">"serviceAccount:${var.ingestion_service_account_id}"</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>outputs.tf</code></strong> — values to expose from the module:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">output</span><span class="w"> </span><span class="nv">"job_name"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Name of the Cloud Run job."</span>
+<span class="w">  </span><span class="na">value</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nv">google_cloud_run_v2_job.ingestion.name</span>
+<span class="p">}</span>
+
+<span class="kr">output</span><span class="w"> </span><span class="nv">"scheduler_name"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Name of the Cloud Scheduler job."</span>
+<span class="w">  </span><span class="na">value</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nv">google_cloud_scheduler_job.ingestion.name</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="2-create-the-dockerfile">2. Create the Dockerfile<a class="headerlink" href="#2-create-the-dockerfile" title="Permanent link"> ¶</a></h3>
+<p>Each ingestion source gets its own Dockerfile that extends the base image and sets its own <code>ENTRYPOINT</code>. The base image (<code>Dockerfile.base</code>) handles the wheel build in stage 1 and installs it in stage 2 (without extras). The source image extends the base and installs only its own extras.</p>
+<p>Create <code>ingestion/Dockerfile.acme_api</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">ARG</span><span class="w"> </span><span class="nv">PYTHONDONTWRITEBYTECODE</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">PYTHONUNBUFFERED</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">USER</span><span class="o">=</span>compiler<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">USER_UID</span><span class="o">=</span><span class="m">1000</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">USER_GID</span><span class="o">=</span><span class="m">1000</span>
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">ghcr.io/compilerla/warehouse/ingestion/base:latest</span>
+
+<span class="k">ARG</span><span class="w"> </span>USER_UID<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>USER_GID
+
+<span class="k">ARG</span><span class="w"> </span>IMAGE_VERSION
+<span class="k">ARG</span><span class="w"> </span>IMAGE_CREATED
+
+<span class="k">LABEL</span><span class="w"> </span>org.opencontainers.image.version<span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">IMAGE_VERSION</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">LABEL</span><span class="w"> </span>org.opencontainers.image.created<span class="o">=</span><span class="s2">"</span><span class="si">${</span><span class="nv">IMAGE_CREATED</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">LABEL</span><span class="w"> </span>org.opencontainers.image.url<span class="o">=</span><span class="s2">"ghcr.io/compilerla/warehouse/ingestion/acme_api"</span>
+
+<span class="c"># USER_UID / USER_GID are not inherited as ENV from base (base only sets them as ARG),</span>
+<span class="c"># but they are needed for BuildKit --mount uid/gid resolution at build time.</span>
+<span class="c"># All other ENV vars (PYTHONUNBUFFERED, HOME, USER, PATH, etc.) are inherited</span>
+<span class="c"># from the base image's ENV and need no re-declaration.</span>
+
+<span class="k">USER</span><span class="w"> </span><span class="s">root</span>
+<span class="k">RUN</span><span class="w"> </span>--mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,id<span class="o">=</span>apt-archives,sharing<span class="o">=</span>locked,target<span class="o">=</span>/var/cache/apt/archives<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,id<span class="o">=</span>apt-lists,sharing<span class="o">=</span>locked,target<span class="o">=</span>/var/lib/apt/lists<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>apt-get<span class="w"> </span>install<span class="w"> </span>--only-upgrade<span class="w"> </span>-y<span class="w"> </span>ca-certificates<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>update-ca-certificates
+<span class="k">USER</span><span class="w"> </span><span class="s">${USER}</span>
+
+<span class="c"># install acme_api extras on top of the base image's installed wheel</span>
+<span class="k">RUN</span><span class="w"> </span>--mount<span class="o">=</span><span class="nv">type</span><span class="o">=</span>cache,id<span class="o">=</span>pipcache,target<span class="o">=</span><span class="si">${</span><span class="nv">PIP_CACHE_DIR</span><span class="si">}</span>,uid<span class="o">=</span><span class="si">${</span><span class="nv">USER_UID</span><span class="si">}</span>,gid<span class="o">=</span><span class="si">${</span><span class="nv">USER_GID</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span><span class="k">$(</span>find<span class="w"> </span>/opt/wheels<span class="w"> </span>-name<span class="w"> </span><span class="s1">'*.whl'</span><span class="k">)</span><span class="o">[</span>acme_api<span class="o">]</span>
+
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">"ingestion"</span><span class="p">,</span><span class="w"> </span><span class="s2">"acme_api"</span><span class="p">,</span><span class="w"> </span><span class="s2">"pull"</span><span class="p">]</span>
+</code></pre></div>
+<blockquote>
+<p><strong>No extras needed?</strong> If the source uses only the base dependencies (click, pandas, google-cloud-storage, etc.), omit the <code>[acme_api]</code> extra from the pip install line — the base image already has everything.</p>
+<p><strong>Source-specific extras</strong>: If you declared <code>acme_api = [...]</code> in <code>pyproject.toml</code> (step 3), reference it with <code>[acme_api]</code>. This installs only the source-specific packages on top of the base image&rsquo;s common dependencies.</p>
+</blockquote>
+<h3 id="3-create-secrets">3. Create Secrets<a class="headerlink" href="#3-create-secrets" title="Permanent link"> ¶</a></h3>
+<p>Create the secrets that the job needs at runtime:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>secrets<span class="w"> </span>create<span class="w"> </span>acme-api-token<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--data-from-file<span class="o">=</span>-<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--replication-policy<span class="o">=</span>automatic<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--project<span class="o">=</span>data-warehouse-492522
+<span class="c1"># (paste your token, press Ctrl+D)</span>
+</code></pre></div>
+<p>Add a data source to read it (create <code>secrets.tf</code> in the module):</p>
+<div class="highlight"><pre><span></span><code><span class="kr">data</span><span class="w"> </span><span class="nc">"google_secret_manager_secret_version"</span><span class="w"> </span><span class="nv">"acme_api_token"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">secret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"acme-api-token"</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>And reference it in the container env in <code>main.tf</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">env</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ACME_API_TOKEN"</span>
+<span class="w">  </span><span class="nb">value_source</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">secret_key_ref</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="na">secret</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">data.google_secret_manager_secret_version.acme_api_token.secret</span>
+<span class="w">      </span><span class="na">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"latest"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="4-add-the-cicd-build-step">4. Add the CI/CD Build Step<a class="headerlink" href="#4-add-the-cicd-build-step" title="Permanent link"> ¶</a></h3>
+<p>The deploy workflow builds images per-source. Each source needs its own <code>Dockerfile</code> and a build step in <code>.github/workflows/deploy.yml</code>.</p>
+<p><strong>Add the build step</strong> to the <code>build-images</code> job, alongside the existing toggl step:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Build &amp; push ingestion acme_api image</span>
+<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc</span><span class="w"> </span><span class="c1"># v7.4.0</span>
+<span class="w">  </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ingestion/Dockerfile.acme_api</span>
+<span class="w">    </span><span class="nt">push</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">ghcr.io/compilerla/warehouse/ingestion/acme_api:${{ env.TOGGL_IMAGE_TAG }}</span>
+<span class="w">      </span><span class="no">ghcr.io/compilerla/warehouse/ingestion/acme_api:latest</span>
+<span class="w">    </span><span class="nt">cache-from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">type=gha</span>
+<span class="w">    </span><span class="nt">cache-to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">type=gha,mode=max</span>
+<span class="w">    </span><span class="nt">build-args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">IMAGE_CREATED=${{ env.IMAGE_CREATED }}</span>
+<span class="w">      </span><span class="no">IMAGE_VERSION=${{ env.IMAGE_VERSION }}</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Image tag</strong>: The workflow currently uses <code>TOGGL_IMAGE_TAG</code> for all ingestion images. For a new source that shares the same release cadence, reuse this variable. If the source needs independent releases, add a new input like <code>ingestion_acme_api_image_tag</code> to the <code>workflow_dispatch</code> trigger and a corresponding <code>env</code> variable.</p>
+</blockquote>
+<p><strong>Add the Terraform variable</strong> to <code>terraform/terraform.tfvars</code> (or your preferred variable file):</p>
+<div class="highlight"><pre><span></span><code><span class="na">ingestion_acme_api_image_tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"abc1234"</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Root variables</strong>: <code>terraform.tfvars</code> defines the runtime values Terraform uses. The <code>var.*</code> declarations in <code>variables.tf</code> at the root of <code>terraform/</code> define the types and defaults. Add <code>variable "ingestion_acme_api_image_tag" { type = string }</code> to <code>terraform/variables.tf</code> if it doesn&rsquo;t already exist.</p>
+</blockquote>
+<h3 id="5-wire-the-module-into-root-config">5. Wire the Module into Root Config<a class="headerlink" href="#5-wire-the-module-into-root-config" title="Permanent link"> ¶</a></h3>
+<p>Add the module to <code>terraform/main.tf</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kr">module</span><span class="w"> </span><span class="nv">"ingestion-acme-api"</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"./modules/ingestion/acme_api"</span>
+
+<span class="w">  </span><span class="na">project_id</span><span class="w">                   </span><span class="o">=</span><span class="w"> </span><span class="nv">var.project_id</span>
+<span class="w">  </span><span class="na">region</span><span class="w">                       </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span>
+<span class="w">  </span><span class="na">image_tag</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="nv">var.ingestion_acme_api_image_tag</span>
+<span class="w">  </span><span class="na">output_bucket</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="nv">module.storage.bucket_name</span>
+<span class="w">  </span><span class="na">ingestion_service_account_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">module.iam.ingestion_service_account_email</span>
+
+<span class="w">  </span><span class="na">depends_on</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nv">module.apis</span><span class="p">,</span><span class="w"> </span><span class="nv">module.iam</span><span class="p">,</span><span class="w"> </span><span class="nv">module.storage</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="6-apply-infrastructure">6. Apply Infrastructure<a class="headerlink" href="#6-apply-infrastructure" title="Permanent link"> ¶</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>terraform
+terraform<span class="w"> </span>init
+terraform<span class="w"> </span>plan<span class="w"> </span>-lock-timeout<span class="o">=</span>5m
+terraform<span class="w"> </span>apply<span class="w"> </span>-lock-timeout<span class="o">=</span>5m<span class="w"> </span>tfplan
+</code></pre></div>
+<p>After apply, the Cloud Run Job and Cloud Scheduler exist but won&rsquo;t run yet — they need a deployed image.</p>
+<h2 id="7-deploy-to-production">7. Deploy to Production<a class="headerlink" href="#7-deploy-to-production" title="Permanent link"> ¶</a></h2>
+<p>With all the infrastructure in place, push a release tag to trigger the CI/CD workflow. The pipeline will:</p>
+<ol>
+<li>Build and push the <code>ingestion/acme_api</code> Docker image to GHCR</li>
+<li>Plan and apply the Terraform changes (binding the image tag to the Cloud Run Job)</li>
+<li>Run the health check on the deployed job</li>
+<li>Create a GitHub Release</li>
+</ol>
+<p>Trigger the pipeline:</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span><span class="m">2026</span>.11.20
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span><span class="m">2026</span>.11.20
+</code></pre></div>
+<p>Watch the run in <a href="https://github.com/compilerla/warehouse/actions">GitHub Actions</a>:</p>
+<div class="highlight"><pre><span></span><code>gh<span class="w"> </span>run<span class="w"> </span>list<span class="w"> </span>--repo<span class="w"> </span>compilerla/warehouse<span class="w"> </span>--workflow<span class="w"> </span>Deploy<span class="w"> </span>--json<span class="w"> </span>title,displayStatus,createdAt<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">'.'</span>
+</code></pre></div>
+<p>Verify the deployment by checking the Cloud Run Job ran successfully:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>run<span class="w"> </span><span class="nb">jobs</span><span class="w"> </span>describe<span class="w"> </span>ingestion-acme-api<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--region<span class="w"> </span>us-west1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--project<span class="w"> </span>data-warehouse-492522
+</code></pre></div>
+<p>And confirm data landed in GCS:</p>
+<div class="highlight"><pre><span></span><code>gsutil<span class="w"> </span>ls<span class="w"> </span>gs://compiler-data-lake/acme_api/
+</code></pre></div>
+<h2 id="checklist">Checklist<a class="headerlink" href="#checklist" title="Permanent link"> ¶</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Created <code>ingestion/acme_api/pull.py</code> with a <code>Puller</code> subclass</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Set <code>source_name = "acme_api"</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>pull()</code> returns <code>list[str]</code> of uploaded file paths</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added <code>acme_api</code> to <code>pyproject.toml</code> optional dependencies (if needed)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added <code>acme_api</code> to <code>[tool.setuptools].packages</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added <code>acme_api</code> to devcontainer pip install</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Created <code>tests/ingestion/acme_api/test_pull.py</code> with unit tests</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tested locally (<code>ingestion acme_api pull --start ... --end ...</code>)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Created <code>Dockerfile.acme_api</code> with <code>ENTRYPOINT ["ingestion", "acme_api", "pull"]</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added CI/CD build step to <code>.github/workflows/deploy.yml</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added <code>ingestion_acme_api_image_tag</code> to <code>terraform/variables.tf</code> and <code>terraform.tfvars</code></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Added Cloud Run Job, Scheduler, and IAM in Terraform</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Pushed release tag and verified the deployment</li>
+</ul>
+<h2 id="whats-next">What&rsquo;s Next<a class="headerlink" href="#whats-next" title="Permanent link"> ¶</a></h2>
+<ul>
+<li>See the <a href="../../guides/adding-ingestion-source/">Adding an Ingestion Source</a> guide for a more detailed walkthrough with secrets handling, Terraform infrastructure, and deployment considerations.</li>
+<li>See the <a href="../../guides/ingestion-operations/">Ingestion Operations Guide</a> for monitoring, troubleshooting, and ad-hoc pull procedures.</li>
+<li>See the <a href="../../explanation/deployment-production/">Deploying to Production</a> guide for a detailed explanation of the CI/CD pipeline.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.expand", "navigation.tabs", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

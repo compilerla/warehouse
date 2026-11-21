@@ -77,3 +77,25 @@ module "ingestion-toggl" {
 
   depends_on = [module.apis, module.iam, module.storage]
 }
+
+module "dbt-runner" {
+  source = "./modules/dbt-runner"
+
+  project_id             = var.project_id
+  region                 = var.region
+  image_tag              = var.dbt_image_tag
+  dbt_service_account_id = module.iam.dbt_runner_service_account_email
+
+  depends_on = [module.apis, module.iam, module.bigquery]
+}
+
+module "dbt-external-tables" {
+  source = "./modules/dbt-external-tables"
+
+  project_id             = var.project_id
+  region                 = var.region
+  image_tag              = var.dbt_image_tag
+  dbt_service_account_id = module.iam.dbt_runner_service_account_email
+
+  depends_on = [module.apis, module.iam, module.bigquery, module.storage]
+}

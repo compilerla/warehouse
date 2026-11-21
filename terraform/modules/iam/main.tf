@@ -37,6 +37,13 @@ resource "google_service_account" "ingestion" {
   project      = var.project_id
 }
 
+resource "google_service_account" "dbt_runner" {
+  account_id   = "dbt-runner"
+  description  = "Dedicated runtime service account for dbt Cloud Run Jobs (external tables + transformations)"
+  display_name = "DBT Cloud Run Service Account"
+  project      = var.project_id
+}
+
 resource "google_project_iam_member" "metabase_roles" {
   for_each = toset(local.metabase_roles)
 

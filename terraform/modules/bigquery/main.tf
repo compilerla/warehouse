@@ -10,7 +10,7 @@ resource "google_bigquery_dataset" "datasets" {
 }
 
 # Grant the Metabase service account read access to every dataset.
-# Metabase only needs to read data; writes are handled by Airflow pipelines.
+# Metabase only needs to read data; writes are handled by Cloud Run Jobs.
 resource "google_bigquery_dataset_iam_member" "metabase_viewer" {
   for_each = var.datasets
 

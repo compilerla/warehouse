@@ -12,16 +12,16 @@ variable "datasets" {
     delete_contents_on_destroy      = optional(bool, false)
   }))
   default = {
-    analytics = {
-      description                = "Cleaned, transformed, and reporting-ready tables and views queried by Metabase."
-      delete_contents_on_destroy = false
-    }
     raw = {
-      description                = "Data as-ingested from source systems by Airflow pipelines."
+      description                = "External tables reading raw data directly from GCS (CSV/JSONL)."
       delete_contents_on_destroy = false
     }
-    staging = {
-      description                = "Intermediate transformation tables used between raw ingestion and analytics."
+    base = {
+      description                = "Base-layer transformation tables produced by dbt from external tables."
+      delete_contents_on_destroy = false
+    }
+    mart = {
+      description                = "Mart-layer reporting tables produced by dbt, queried by Metabase."
       delete_contents_on_destroy = false
     }
   }

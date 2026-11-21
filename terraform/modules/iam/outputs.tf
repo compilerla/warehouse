@@ -6,6 +6,10 @@ output "ingestion_service_account_email" {
   value = google_service_account.ingestion.email
 }
 
+output "dbt_runner_service_account_email" {
+  value = google_service_account.dbt_runner.email
+}
+
 output "metabase_service_account_email" {
   value = google_service_account.metabase.email
 }

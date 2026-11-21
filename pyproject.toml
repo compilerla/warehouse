@@ -5,7 +5,7 @@ description = "Data ingestion framework for the Compiler analytics warehouse."
 requires-python = ">=3.14"
 dependencies = [
     "click>=8.1",
-    "google-cloud-storage>=2.18",
+    "google-cloud-storage>=3.17.1",
     "pandas>=2.0",
     "pendulum>=3.0",
     "pydantic>=2.0",

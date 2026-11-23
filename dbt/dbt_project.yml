@@ -19,7 +19,6 @@ models:
   compiler_warehouse_dbt:
     base:
       +materialized: view
-      +schema: base
       +database: "{{ env_var('GOOGLE_CLOUD_PROJECT', 'data-warehouse-492522') }}"
     mart:
       +materialized: table

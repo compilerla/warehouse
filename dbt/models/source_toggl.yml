@@ -1,0 +1,168 @@
+version: 2
+
+sources:
+  - name: raw_toggl
+    description: >-
+      External tables in BigQuery reading Toggl CSV files from GCS.
+      Managed by the dbt-external-tables Cloud Run Job.
+    database: "{{ env_var('GOOGLE_CLOUD_PROJECT', 'data-warehouse-492522') }}"
+    schema: raw
+    tables:
+      - name: timesheets
+        description: >-
+          Time-sheet records from Toggl (date-range dependent, includes pull_date).
+          Duration is in milliseconds from the Toggl API.
+        columns:
+          - name: time_entry_id
+            data_type: string
+            tests:
+              - not_null
+          - name: date
+            data_type: date
+          - name: start_time
+            data_type: string
+          - name: end_time
+            data_type: string
+          - name: user_id
+            data_type: string
+          - name: client_id
+            data_type: string
+          - name: client_name
+            data_type: string
+          - name: project_id
+            data_type: string
+          - name: project_name
+            data_type: string
+          - name: task_id
+            data_type: string
+          - name: task_name
+            data_type: string
+          - name: billable
+            data_type: boolean
+          - name: billable_rate
+            data_type: float64
+          - name: description
+            data_type: string
+          - name: duration
+            data_type: int64
+          - name: project_is_private
+            data_type: boolean
+          - name: project_status
+            data_type: string
+          - name: client_status
+            data_type: string
+          - name: tags
+            data_type: string
+          - name: pull_date
+            data_type: date
+
+      - name: users
+        description: Toggl user accounts.
+        columns:
+          - name: id
+            data_type: int64
+            tests:
+              - unique
+              - not_null
+          - name: uuid
+            data_type: string
+          - name: name
+            data_type: string
+          - name: email
+            data_type: string
+          - name: timezone
+            data_type: string
+          - name: timezone_offset
+            data_type: int64
+          - name: default_workspace_id
+            data_type: int64
+          - name: start_date
+            data_type: date
+          - name: end_date
+            data_type: date
+          - name: has_photo
+            data_type: boolean
+          - name: money
+            data_type: string
+          - name: created_at
+            data_type: datetime
+          - name: updated_at
+            data_type: datetime
+          - name: pull_date
+            data_type: date
+
+      - name: clients
+        description: Toggl client records.
+        columns:
+          - name: id
+            data_type: int64
+            tests:
+              - unique
+              - not_null
+          - name: name
+            data_type: string
+          - name: notes
+            data_type: string
+          - name: currency
+            data_type: string
+          - name: organization_id
+            data_type: string
+          - name: created_at
+            data_type: datetime
+          - name: updated_at
+            data_type: datetime
+          - name: pull_date
+            data_type: date
+
+      - name: projects
+        description: Toggl project records.
+        columns:
+          - name: id
+            data_type: int64
+            tests:
+              - unique
+              - not_null
+          - name: name
+            data_type: string
+          - name: color
+            data_type: string
+          - name: is_private
+            data_type: boolean
+          - name: status
+            data_type: string
+          - name: client_id
+            data_type: string
+          - name: client_name
+            data_type: string
+          - name: organization_id
+            data_type: string
+          - name: created_at
+            data_type: datetime
+          - name: updated_at
+            data_type: datetime
+          - name: billable
+            data_type: boolean
+          - name: pull_date
+            data_type: date
+
+      - name: project_users
+        description: User-to-project assignment records.
+        columns:
+          - name: user_id
+            data_type: int64
+            tests:
+              - not_null
+          - name: project_id
+            data_type: int64
+            tests:
+              - not_null
+          - name: role
+            data_type: string
+          - name: access
+            data_type: string
+          - name: created_at
+            data_type: datetime
+          - name: updated_at
+            data_type: datetime
+          - name: pull_date
+            data_type: date
